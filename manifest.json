@@ -1,7 +1,7 @@
 {
   "id": "recents",
   "name": "Recents",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "minAppVersion": "1.14.4",
   "description": "Recent and pinned files in a sidebar pane.",
   "author": "khaister",
