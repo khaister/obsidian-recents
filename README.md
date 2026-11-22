@@ -26,6 +26,10 @@ The pane has two sections, **Pinned** and **Recent**. Click a section title to c
 
 The command palette also has **Pin current file**, **Unpin current file**, **Toggle pin for current file** and **Clear recent files**.
 
+## Icons
+
+If you use the [Iconic](https://github.com/gfxholo/iconic) plugin, the icons and colors you gave your files show next to their names here. Files without an icon stay plain, and nothing changes if Iconic is off. After you change an icon, reopen the pane to see it.
+
 ## Files outside your vault
 
 Recents lists and pins files from outside your vault, the same as any other file. Hover over a row to see where the file is on your computer. These files open on desktop only, so on a phone a pinned outside file stays in your pins but does not show in the pane. Dragging one into a note and previewing one are not available.

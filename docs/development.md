@@ -31,6 +31,12 @@ Recent Files has open issues for a few things this plugin handles by design:
 
 Other differences: a folder rename updates every pin and recent entry under it. The list stores paths only, so a renamed note never shows a stale title.
 
+## Iconic icons
+
+Iconic documents no API for other plugins. `src/iconic.ts` reads the loaded plugin from `app.plugins.plugins.iconic` and calls two of its internal members, `getFileItem(path)` and `ruleManager.checkRuling("file", id)`, the same pair Iconic uses to draw its own file lists. Every member is checked before use and the lookup runs inside a try/catch, so an Iconic update that changes them means no icons, not an error. It was written against Iconic 1.1.11.
+
+Only icons a user assigned are shown, not Iconic's default file icons. Files outside the vault never get one. The pane reads icons each time it redraws, so a change made in Iconic appears on the next redraw.
+
 ## Files outside the vault
 
 Obsidian addresses a file outside the vault as `file:` followed by its absolute path, and only the desktop app can open one. Recents stores that path like any other. Dragging a row into a note and the hover preview are skipped for these files.
