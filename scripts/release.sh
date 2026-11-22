@@ -13,7 +13,7 @@ usage() {
   cat <<'EOF'
 Usage: scripts/release.sh [OPTIONS]
 
-Bump manifest.json and versions.json, commit, tag, push main and the tag, and
+Bump manifest.json, versions.json and package.json, commit, tag, push main and the tag, and
 publish a release with main.js, manifest.json and styles.css attached. Versions use YYYY.MMDD.N, starting
 at 1 each day, with leading zeroes removed from MMDD.
 
@@ -180,7 +180,7 @@ if [ "$DRY_RUN" -eq 1 ]; then
 fi
 
 bump_files() {
-  # Write the bumped manifest.json and versions.json into directory $1.
+  # Write the bumped manifest.json, versions.json and package.json into directory $1.
   python3 - "$TAG" "$1" <<'PY'
 import json, sys
 from pathlib import Path
@@ -191,6 +191,9 @@ manifest["version"] = tag
 versions = json.loads(Path("versions.json").read_text())
 versions[tag] = manifest["minAppVersion"]
 (out / "versions.json").write_text(json.dumps(versions, indent=2) + "\n")
+package = json.loads(Path("package.json").read_text())
+package["version"] = tag
+(out / "package.json").write_text(json.dumps(package, indent=2) + "\n")
 PY
 }
 
@@ -201,7 +204,7 @@ if [ "$RELEASE_ONLY" -eq 0 ] && [ "$IS_PRE" -eq 1 ]; then
   STAGE_INDEX="$STAGE_DIR/index"
   bump_files "$STAGE_DIR"
   GIT_INDEX_FILE="$STAGE_INDEX" git read-tree HEAD
-  for f in manifest.json versions.json; do
+  for f in manifest.json versions.json package.json; do
     blob=$(git hash-object -w "$STAGE_DIR/$f")
     GIT_INDEX_FILE="$STAGE_INDEX" git update-index --cacheinfo "100644,$blob,$f"
   done
@@ -214,7 +217,7 @@ elif [ "$RELEASE_ONLY" -eq 0 ]; then
   [ -s styles.css ] || fail "styles.css is missing or empty."
   if [ "$BUMP" -eq 1 ]; then
     bump_files .
-    git add manifest.json versions.json
+    git add manifest.json versions.json package.json
     git commit -m "chore(release): bump to $TAG"
   fi
   git tag -a "$TAG" -m "Release $TAG"
