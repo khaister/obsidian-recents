@@ -1,0 +1,20 @@
+Recents (Obsidian plugin)
+Copyright 2026 Khai
+Licensed under the GNU General Public License, version 3.
+
+The idea of a sidebar list of recently opened files comes from Recent Files by Tony Grosinger.
+https://github.com/tgrosinger/recent-files-obsidian
+Copyright Tony Grosinger
+Licensed under the GNU General Public License, version 3.
+
+Recents is an independent implementation. It was written from scratch and no source code
+from Recent Files was copied into it. Recent Files was read as a reference for which
+behaviors users expect from such a pane, and its issue tracker was read to find problems to avoid.
+
+The pinned section is inspired by Pin to Top by valenzine.
+https://github.com/valenzine/obsidian-pin-to-top
+Licensed under the MIT License.
+No source code from Pin to Top was copied either.
+
+This project is an unofficial community plugin. It is not affiliated with or endorsed by
+the authors of either plugin or by Obsidian.
