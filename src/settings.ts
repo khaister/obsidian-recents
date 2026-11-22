@@ -1,4 +1,4 @@
-import { PluginSettingTab, type App, type SettingDefinitionItem } from "obsidian";
+import { PluginSettingTab, type App, type Setting, type SettingDefinitionItem } from "obsidian";
 import { compilePatterns } from "./model";
 import type RecentsPlugin from "./main";
 import { MAX_ITEMS_LIMIT, MAX_TOOLTIP_DELAY, type PathLocation, type SectionOrder } from "./types";
@@ -118,20 +118,34 @@ export class RecentsSettingTab extends PluginSettingTab {
           {
             name: "Path patterns",
             desc: "Regular expressions, one per line, tested against the full path. Matching files are not added to the recent list.",
-            control: {
-              type: "textarea",
-              key: "omittedPaths",
-              rows: 5,
-              placeholder: "^daily/\n\\.png$",
-              validate: (value) => {
-                const { invalid } = compilePatterns(lines(value));
-                return invalid.length > 0 ? "Not a valid pattern: " + invalid.join(", ") : undefined;
-              },
-            },
+            render: (setting) => this.renderPathPatterns(setting),
           },
         ],
       },
     ];
+  }
+
+  /**
+   * A text box under the description, as wide as the page, in a monospace font.
+   * The built-in textarea control sits beside the description, so this draws its own.
+   */
+  private renderPathPatterns(setting: Setting): void {
+    const { store } = this.plugin;
+    setting.settingEl.addClass("recents-wide-setting");
+    setting.addTextArea((area) => {
+      area.inputEl.rows = 5;
+      area.inputEl.addClass("recents-pattern-input");
+      area.setPlaceholder("^daily/\n\\.png$").setValue(store.settings.omittedPaths.join("\n"));
+      const warning = setting.controlEl.createDiv({ cls: "recents-setting-warning" });
+      area.onChange((value) => {
+        const { invalid } = compilePatterns(lines(value));
+        warning.setText(invalid.length > 0 ? "Not a valid pattern: " + invalid.join(", ") : "");
+        // An invalid pattern is shown but not saved, so the last good list stays in effect.
+        if (invalid.length > 0) return;
+        store.updateSettings({ omittedPaths: lines(value) });
+        this.plugin.pruneOmitted();
+      });
+    });
   }
 
   public getControlValue(key: string): unknown {
@@ -159,8 +173,6 @@ export class RecentsSettingTab extends PluginSettingTab {
         return settings.keepOrderOnListClick;
       case "focusExistingTab":
         return settings.focusExistingTab;
-      case "omittedPaths":
-        return settings.omittedPaths.join("\n");
       default:
         return undefined;
     }
@@ -198,9 +210,6 @@ export class RecentsSettingTab extends PluginSettingTab {
         return store.updateSettings({ sectionOrder: value as SectionOrder });
       case "pathLocation":
         return store.updateSettings({ pathLocation: value as PathLocation });
-      case "omittedPaths":
-        store.updateSettings({ omittedPaths: lines(value) });
-        return this.plugin.pruneOmitted();
       default:
         return;
     }

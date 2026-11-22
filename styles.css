@@ -141,6 +141,26 @@
   box-shadow: 0 2px 0 0 var(--interactive-accent);
 }
 
+/* A setting whose box goes under its description instead of beside it. */
+.recents-wide-setting {
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--size-4-2);
+}
+
+.recents-wide-setting .setting-item-control {
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  width: 100%;
+}
+
+.recents-pattern-input {
+  width: 100%;
+  font-family: var(--font-monospace);
+  resize: vertical;
+}
+
 .recents-setting-warning {
   margin-top: var(--size-2-2);
   color: var(--text-error);
