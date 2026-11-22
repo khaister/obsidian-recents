@@ -1,0 +1,95 @@
+.recents-view {
+  padding: var(--size-4-2);
+}
+
+.recents-section + .recents-section {
+  margin-top: var(--size-4-2);
+}
+
+.recents-section-header {
+  gap: var(--size-2-2);
+  color: var(--text-muted);
+  font-size: var(--font-ui-smaller);
+  font-weight: var(--font-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.recents-section-header:hover,
+.recents-section-header:focus-visible {
+  color: var(--text-normal);
+}
+
+.recents-section-count {
+  margin-left: auto;
+  font-weight: var(--font-normal);
+}
+
+.recents-section.is-collapsed > .recents-section-header .collapse-icon svg {
+  transform: rotate(0deg);
+}
+
+.recents-section:not(.is-collapsed) > .recents-section-header .collapse-icon svg {
+  transform: rotate(90deg);
+}
+
+.recents-empty {
+  padding: var(--size-4-1) var(--size-4-2);
+  color: var(--text-faint);
+  font-size: var(--font-ui-small);
+}
+
+.recents-row-self {
+  display: flex;
+  align-items: center;
+  gap: var(--size-2-2);
+}
+
+.recents-row-self .nav-file-title-content {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.recents-row-actions {
+  display: none;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: var(--size-2-1);
+}
+
+.recents-row-self:hover .recents-row-actions,
+.recents-row-self:focus-within .recents-row-actions {
+  display: flex;
+}
+
+/* No hover on touch screens, so keep the actions in reach. */
+@media (hover: none) {
+  .recents-row-actions {
+    display: flex;
+  }
+}
+
+.recents-action {
+  padding: var(--size-2-1);
+}
+
+.recents-row-self.is-dragging {
+  opacity: 0.5;
+}
+
+.recents-row-self.drop-before {
+  box-shadow: 0 -2px 0 0 var(--interactive-accent);
+}
+
+.recents-row-self.drop-after {
+  box-shadow: 0 2px 0 0 var(--interactive-accent);
+}
+
+.recents-setting-warning {
+  margin-top: var(--size-2-2);
+  color: var(--text-error);
+}
+
+.recents-setting-warning:empty {
+  display: none;
+}
