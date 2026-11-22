@@ -1,7 +1,7 @@
 import { PluginSettingTab, type App, type SettingDefinitionItem } from "obsidian";
 import { compilePatterns } from "./model";
 import type RecentsPlugin from "./main";
-import { MAX_ITEMS_LIMIT, MAX_TOOLTIP_DELAY, type SectionOrder } from "./types";
+import { MAX_ITEMS_LIMIT, MAX_TOOLTIP_DELAY, type PathLocation, type SectionOrder } from "./types";
 
 function lines(text: string): string[] {
   return text
@@ -40,9 +40,23 @@ export class RecentsSettingTab extends PluginSettingTab {
             control: { type: "toggle", key: "hidePinnedFromRecent" },
           },
           {
-            name: "Show folder path",
-            desc: "Show the folder each file is in after its name, to tell apart files that share a name.",
-            control: { type: "toggle", key: "showPath" },
+            name: "Folder path",
+            desc: "Show the folder each file is in, to tell apart files that share a name. Below the name, a long path wraps onto more lines.",
+            control: {
+              type: "dropdown",
+              key: "pathLocation",
+              options: { off: "Off", beside: "Beside the name", below: "Below the name" },
+            },
+          },
+          {
+            name: "Shorten folder names",
+            desc: "Cut each folder to its first letter, so home/improvements/bathroom shows as h/i/b.",
+            control: { type: "toggle", key: "shortenPath" },
+          },
+          {
+            name: "Show absolute path",
+            desc: "Start the path at the root of your disk instead of the vault. Desktop only.",
+            control: { type: "toggle", key: "absolutePath" },
           },
           {
             name: "Tooltip delay",
@@ -131,8 +145,12 @@ export class RecentsSettingTab extends PluginSettingTab {
         return settings.sectionOrder;
       case "hidePinnedFromRecent":
         return settings.hidePinnedFromRecent;
-      case "showPath":
-        return settings.showPath;
+      case "pathLocation":
+        return settings.pathLocation;
+      case "shortenPath":
+        return settings.shortenPath;
+      case "absolutePath":
+        return settings.absolutePath;
       case "maxItems":
         return settings.maxItems;
       case "tooltipDelay":
@@ -158,8 +176,10 @@ export class RecentsSettingTab extends PluginSettingTab {
           return store.updateSettings({ showRecent: value });
         case "hidePinnedFromRecent":
           return store.updateSettings({ hidePinnedFromRecent: value });
-        case "showPath":
-          return store.updateSettings({ showPath: value });
+        case "shortenPath":
+          return store.updateSettings({ shortenPath: value });
+        case "absolutePath":
+          return store.updateSettings({ absolutePath: value });
         case "keepOrderOnListClick":
           return store.updateSettings({ keepOrderOnListClick: value });
         case "focusExistingTab":
@@ -176,6 +196,8 @@ export class RecentsSettingTab extends PluginSettingTab {
     switch (key) {
       case "sectionOrder":
         return store.updateSettings({ sectionOrder: value as SectionOrder });
+      case "pathLocation":
+        return store.updateSettings({ pathLocation: value as PathLocation });
       case "omittedPaths":
         store.updateSettings({ omittedPaths: lines(value) });
         return this.plugin.pruneOmitted();

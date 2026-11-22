@@ -2,11 +2,14 @@ import { describe, expect, it } from "vitest";
 import {
   compilePatterns,
   displayPath,
+  folderLabel,
+  fullPathLabel,
   isExternalPath,
   matchesAny,
   movePin,
   parentPath,
   recordOpen,
+  shortenPath,
   removePaths,
   renamePaths,
   sanitize,
@@ -136,5 +139,52 @@ describe("external files", () => {
       "file:/Users/me/c.md",
       "notes/b.md",
     ]);
+  });
+});
+
+describe("path display", () => {
+  const relative = { absolute: false, base: null, shorten: false };
+
+  it("shortens every folder to its first letter", () => {
+    expect(shortenPath("home/improvements/bathroom")).toBe("h/i/b");
+    expect(shortenPath("/Users/khai")).toBe("/U/k");
+    expect(shortenPath("C:/Users/me")).toBe("C:/U/m");
+    expect(shortenPath("")).toBe("");
+  });
+
+  it("labels a folder relative to the vault, shortened or not", () => {
+    expect(folderLabel("home/improvements/README.md", relative)).toBe("home/improvements");
+    expect(folderLabel("home/improvements/README.md", { ...relative, shorten: true })).toBe("h/i");
+    expect(folderLabel("README.md", relative)).toBe("");
+  });
+
+  it("starts at the disk root when asked and the vault location is known", () => {
+    const style = { absolute: true, base: "/Users/me/vault", shorten: false };
+    expect(folderLabel("home/README.md", style)).toBe("/Users/me/vault/home");
+    expect(folderLabel("README.md", style)).toBe("/Users/me/vault");
+    expect(folderLabel("home/README.md", { ...style, shorten: true })).toBe("/U/m/v/h");
+    expect(folderLabel("home/README.md", { ...style, base: "C:\\Users\\me\\vault\\" })).toBe("C:/Users/me/vault/home");
+  });
+
+  it("falls back to the vault path when the vault location is unknown", () => {
+    expect(folderLabel("home/README.md", { absolute: true, base: null, shorten: false })).toBe("home");
+  });
+
+  it("never rewrites the path of an external file", () => {
+    const style = { absolute: true, base: "/Users/me/vault", shorten: false };
+    expect(folderLabel("file:/Users/me/docs/a.md", style)).toBe("/Users/me/docs");
+    expect(fullPathLabel("file:/Users/me/docs/a.md", style)).toBe("/Users/me/docs/a.md");
+  });
+
+  it("gives the full path for a tooltip", () => {
+    expect(fullPathLabel("home/README.md", relative)).toBe("home/README.md");
+    expect(fullPathLabel("home/README.md", { absolute: true, base: "/Users/me/vault" })).toBe("/Users/me/vault/home/README.md");
+  });
+
+  it("reads the old show-path switch", () => {
+    expect(sanitize({ settings: { showPath: false } }).settings.pathLocation).toBe("off");
+    expect(sanitize({ settings: { showPath: true } }).settings.pathLocation).toBe("beside");
+    expect(sanitize({ settings: { pathLocation: "below", showPath: false } }).settings.pathLocation).toBe("below");
+    expect(sanitize({}).settings.pathLocation).toBe("beside");
   });
 });

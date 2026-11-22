@@ -45,12 +45,20 @@
   gap: var(--size-2-2);
 }
 
-.recents-row-self .nav-file-title-content {
+.recents-row-text {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  gap: var(--size-2-2);
+  min-width: 0;
+}
+
+.recents-row-text .nav-file-title-content {
   flex: 0 1 auto;
   min-width: 0;
 }
 
-/* Fills the space after the name and gives way first when the row is narrow. */
+/* Beside the name: fills the space after it and gives way first when the row is narrow. */
 .recents-row-path {
   flex: 1 100 auto;
   min-width: 0;
@@ -61,8 +69,20 @@
   font-size: var(--font-ui-smaller);
 }
 
-.recents-row-self:not(:has(.recents-row-path)) .nav-file-title-content {
-  flex: 1 1 auto;
+/* Below the name: its own line, wrapping onto more when the path is long. */
+.recents-row-text.is-below {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+}
+
+.recents-row-text.is-below .recents-row-path {
+  flex: none;
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  line-height: var(--line-height-tight);
 }
 
 .recents-row-icon {

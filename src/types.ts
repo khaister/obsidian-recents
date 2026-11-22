@@ -2,6 +2,9 @@ export type SectionId = "pinned" | "recent";
 
 export type SectionOrder = "pinned-first" | "recent-first";
 
+/** Where a file's folder path goes in its row. */
+export type PathLocation = "off" | "beside" | "below";
+
 export interface RecentsSettings {
   /** Most recent files to keep in the list. */
   maxItems: number;
@@ -10,8 +13,12 @@ export interface RecentsSettings {
   sectionOrder: SectionOrder;
   /** Leave a pinned file out of the recent section. */
   hidePinnedFromRecent: boolean;
-  /** Show the folder a file is in after its name. */
-  showPath: boolean;
+  /** Where to show the folder a file is in. */
+  pathLocation: PathLocation;
+  /** Cut each folder name to its first letter, so h/i/b stands for home/improvements/bathroom. */
+  shortenPath: boolean;
+  /** Show the path from the root of the disk instead of from the vault root. Desktop only. */
+  absolutePath: boolean;
   /** Milliseconds to wait before a row's path tooltip appears. */
   tooltipDelay: number;
   /** Switch to the tab that already shows the file instead of opening a copy. */
@@ -39,7 +46,9 @@ export const DEFAULT_SETTINGS: RecentsSettings = {
   showRecent: true,
   sectionOrder: "pinned-first",
   hidePinnedFromRecent: false,
-  showPath: true,
+  pathLocation: "beside",
+  shortenPath: false,
+  absolutePath: false,
   tooltipDelay: 100,
   focusExistingTab: true,
   keepOrderOnListClick: false,

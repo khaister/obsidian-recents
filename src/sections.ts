@@ -1,6 +1,6 @@
-import { Keymap, Menu, setIcon, setTooltip, type App, type HoverParent, type PaneType, type TFile } from "obsidian";
+import { FileSystemAdapter, Keymap, Menu, setIcon, setTooltip, type App, type HoverParent, type PaneType, type TFile } from "obsidian";
 import { getFileIcon, knownIconIds, renderIcon } from "./iconic";
-import { displayPath, isExternalPath, parentPath } from "./model";
+import { folderLabel, fullPathLabel, isExternalPath, type PathStyle } from "./model";
 import type { Store } from "./store";
 import type { SectionId } from "./types";
 
@@ -91,7 +91,12 @@ function renderSection(
   }
   const activePath = app.workspace.getActiveFile()?.path ?? null;
   const knownIcons = knownIconIds();
-  for (const file of files) renderRow(body, host, id, file, activePath, knownIcons);
+  const pathStyle: PathStyle = {
+    absolute: store.settings.absolutePath,
+    base: app.vault.adapter instanceof FileSystemAdapter ? app.vault.adapter.getBasePath() : null,
+    shorten: store.settings.shortenPath,
+  };
+  for (const file of files) renderRow(body, host, id, file, activePath, knownIcons, pathStyle);
 }
 
 function renderRow(
@@ -101,6 +106,7 @@ function renderRow(
   file: TFile,
   activePath: string | null,
   knownIcons: Set<string>,
+  pathStyle: PathStyle,
 ): void {
   const { app, store } = host;
   const row = body.createDiv({ cls: "recents-row tree-item nav-file" });
@@ -109,14 +115,17 @@ function renderRow(
   self.setAttr("draggable", "true");
   self.setAttr("data-path", file.path);
   const external = isExternalPath(file.path);
-  setTooltip(self, displayPath(file.path), { delay: store.settings.tooltipDelay });
+  setTooltip(self, fullPathLabel(file.path, pathStyle), { delay: store.settings.tooltipDelay });
   self.toggleClass("is-active", file.path === activePath);
 
   const fileIcon = getFileIcon(app, file.path);
   if (fileIcon) renderIcon(self.createDiv({ cls: "recents-row-icon" }), fileIcon, knownIcons);
-  self.createDiv({ cls: "tree-item-inner nav-file-title-content", text: file.basename });
-  const folder = store.settings.showPath ? parentPath(file.path) : "";
-  if (folder) self.createDiv({ cls: "recents-row-path", text: folder });
+  const { pathLocation } = store.settings;
+  const text = self.createDiv({ cls: "recents-row-text" });
+  text.toggleClass("is-below", pathLocation === "below");
+  text.createDiv({ cls: "tree-item-inner nav-file-title-content", text: file.basename });
+  const folder = pathLocation === "off" ? "" : folderLabel(file.path, pathStyle);
+  if (folder) text.createDiv({ cls: "recents-row-path", text: folder });
   if (file.extension !== "md") self.createDiv({ cls: "nav-file-tag", text: file.extension });
 
   const actions = self.createDiv({ cls: "recents-row-actions" });

@@ -42,7 +42,9 @@ Recents lists and pins files from outside your vault, the same as any other file
 | Show recent section | On | Shows or hides the Recent section. |
 | Section order | Pinned first | Chooses which section is on top. |
 | Hide pinned files from recent | Off | A pinned file shows only in the Pinned section. |
-| Show folder path | On | Shows the folder each file is in, in a fainter color after its name. Useful when several files share a name, such as README. |
+| Folder path | Beside the name | Shows the folder each file is in, in a fainter color, to tell apart files that share a name such as README. Choose Off, Beside the name, or Below the name. Below the name, a long path wraps onto more lines. |
+| Shorten folder names | Off | Cuts each folder to its first letter, so `home/improvements/bathroom` shows as `h/i/b`. |
+| Show absolute path | Off | Starts the path at the root of your disk instead of your vault, for example `/Users/you/vault/home`. Desktop only. |
 | Tooltip delay | 100 | Milliseconds to wait before the full path shows when you hover over a file. Enter 0 to show it at once. |
 | Maximum recent files | 50 | How many files Recent keeps. Older ones drop off the end. Enter a number from 1 to 500. |
 | Keep order when opening from the list | Off | A file you open from the pane stays where it is instead of jumping to the top. |

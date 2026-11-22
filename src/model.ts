@@ -2,6 +2,7 @@ import {
   DEFAULT_SETTINGS,
   MAX_ITEMS_LIMIT,
   MAX_TOOLTIP_DELAY,
+  type PathLocation,
   type PersistedData,
   type RecentsSettings,
   type SectionOrder,
@@ -27,6 +28,41 @@ export function parentPath(path: string): string {
   const shown = displayPath(path);
   const slash = shown.lastIndexOf("/");
   return slash <= 0 ? "" : shown.slice(0, slash);
+}
+
+/** Cut every folder name to its first letter: "home/improvements" becomes "h/i". */
+export function shortenPath(folder: string): string {
+  return folder
+    .split("/")
+    .map((segment) => (segment === "" || /^[A-Za-z]:$/.test(segment) ? segment : (Array.from(segment)[0] ?? "")))
+    .join("/");
+}
+
+export interface PathStyle {
+  /** Start from the root of the disk. Needs `base`; falls back to the vault path without it. */
+  absolute: boolean;
+  /** Absolute path of the vault folder, when the platform can say. */
+  base: string | null;
+  shorten: boolean;
+}
+
+function absoluteFrom(base: string, relative: string): string {
+  const root = base.replace(/\\/g, "/").replace(/\/+$/, "");
+  if (!relative) return root || "/";
+  return root + "/" + relative;
+}
+
+/** The folder text for a row: relative to the vault root, or absolute, and optionally shortened. */
+export function folderLabel(path: string, style: PathStyle): string {
+  let folder = parentPath(path);
+  if (style.absolute && style.base && !isExternalPath(path)) folder = absoluteFrom(style.base, folder);
+  return style.shorten ? shortenPath(folder) : folder;
+}
+
+/** The full path of a file, with its name, for a tooltip. */
+export function fullPathLabel(path: string, style: Pick<PathStyle, "absolute" | "base">): string {
+  if (style.absolute && style.base && !isExternalPath(path)) return absoluteFrom(style.base, path);
+  return displayPath(path);
 }
 
 /** Put `path` at the front, drop duplicates, and cap the length. */
@@ -102,6 +138,13 @@ function asBool(value: unknown, fallback: boolean): boolean {
   return typeof value === "boolean" ? value : fallback;
 }
 
+function asPathLocation(value: unknown, legacyShow: unknown): PathLocation {
+  if (value === "off" || value === "beside" || value === "below") return value;
+  // Earlier versions saved a single on/off switch.
+  if (legacyShow === false) return "off";
+  return DEFAULT_SETTINGS.pathLocation;
+}
+
 function asOrder(value: unknown): SectionOrder {
   return value === "recent-first" ? "recent-first" : "pinned-first";
 }
@@ -125,7 +168,9 @@ export function sanitize(raw: unknown): PersistedData {
     showRecent: asBool(s.showRecent, DEFAULT_SETTINGS.showRecent),
     sectionOrder: asOrder(s.sectionOrder),
     hidePinnedFromRecent: asBool(s.hidePinnedFromRecent, DEFAULT_SETTINGS.hidePinnedFromRecent),
-    showPath: asBool(s.showPath, DEFAULT_SETTINGS.showPath),
+    pathLocation: asPathLocation(s.pathLocation, s.showPath),
+    shortenPath: asBool(s.shortenPath, DEFAULT_SETTINGS.shortenPath),
+    absolutePath: asBool(s.absolutePath, DEFAULT_SETTINGS.absolutePath),
     tooltipDelay: Math.min(MAX_TOOLTIP_DELAY, Math.max(0, Math.round(delayRaw))),
     focusExistingTab: asBool(s.focusExistingTab, DEFAULT_SETTINGS.focusExistingTab),
     keepOrderOnListClick: asBool(s.keepOrderOnListClick, DEFAULT_SETTINGS.keepOrderOnListClick),
