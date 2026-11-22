@@ -81,22 +81,27 @@
   line-height: 1;
 }
 
+/* Always laid out, only hidden, so showing them on hover does not move the row. */
 .recents-row-actions {
-  display: none;
+  display: flex;
   flex: 0 0 auto;
   align-items: center;
   gap: var(--size-2-1);
+  opacity: 0;
+  pointer-events: none;
 }
 
 .recents-row-self:hover .recents-row-actions,
 .recents-row-self:focus-within .recents-row-actions {
-  display: flex;
+  opacity: 1;
+  pointer-events: auto;
 }
 
 /* No hover on touch screens, so keep the actions in reach. */
 @media (hover: none) {
   .recents-row-actions {
-    display: flex;
+    opacity: 1;
+    pointer-events: auto;
   }
 }
 
