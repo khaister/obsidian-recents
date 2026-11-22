@@ -1,0 +1,10 @@
+{
+  "id": "recents",
+  "name": "Recents",
+  "version": "0.0.0",
+  "minAppVersion": "1.14.4",
+  "description": "Recent and pinned files in a sidebar pane.",
+  "author": "khaister",
+  "authorUrl": "https://github.com/khaister",
+  "isDesktopOnly": false
+}
