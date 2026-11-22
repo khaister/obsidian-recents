@@ -1,6 +1,7 @@
 import {
   DEFAULT_SETTINGS,
   MAX_ITEMS_LIMIT,
+  MAX_TOOLTIP_DELAY,
   type PersistedData,
   type RecentsSettings,
   type SectionOrder,
@@ -116,6 +117,8 @@ export function sanitize(raw: unknown): PersistedData {
     : {}) as Record<string, unknown>;
 
   const maxRaw = typeof s.maxItems === "number" && Number.isFinite(s.maxItems) ? s.maxItems : DEFAULT_SETTINGS.maxItems;
+  const delayRaw =
+    typeof s.tooltipDelay === "number" && Number.isFinite(s.tooltipDelay) ? s.tooltipDelay : DEFAULT_SETTINGS.tooltipDelay;
   const settings: RecentsSettings = {
     maxItems: Math.min(MAX_ITEMS_LIMIT, Math.max(1, Math.round(maxRaw))),
     showPinned: asBool(s.showPinned, DEFAULT_SETTINGS.showPinned),
@@ -123,6 +126,7 @@ export function sanitize(raw: unknown): PersistedData {
     sectionOrder: asOrder(s.sectionOrder),
     hidePinnedFromRecent: asBool(s.hidePinnedFromRecent, DEFAULT_SETTINGS.hidePinnedFromRecent),
     showPath: asBool(s.showPath, DEFAULT_SETTINGS.showPath),
+    tooltipDelay: Math.min(MAX_TOOLTIP_DELAY, Math.max(0, Math.round(delayRaw))),
     focusExistingTab: asBool(s.focusExistingTab, DEFAULT_SETTINGS.focusExistingTab),
     keepOrderOnListClick: asBool(s.keepOrderOnListClick, DEFAULT_SETTINGS.keepOrderOnListClick),
     omittedPaths: asStringArray(s.omittedPaths),

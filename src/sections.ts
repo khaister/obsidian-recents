@@ -1,4 +1,4 @@
-import { Keymap, Menu, setIcon, type App, type HoverParent, type PaneType, type TFile } from "obsidian";
+import { Keymap, Menu, setIcon, setTooltip, type App, type HoverParent, type PaneType, type TFile } from "obsidian";
 import { getFileIcon, knownIconIds, renderIcon } from "./iconic";
 import { displayPath, isExternalPath, parentPath } from "./model";
 import type { Store } from "./store";
@@ -109,7 +109,7 @@ function renderRow(
   self.setAttr("draggable", "true");
   self.setAttr("data-path", file.path);
   const external = isExternalPath(file.path);
-  self.setAttr("aria-label", displayPath(file.path));
+  setTooltip(self, displayPath(file.path), { delay: store.settings.tooltipDelay });
   self.toggleClass("is-active", file.path === activePath);
 
   const fileIcon = getFileIcon(app, file.path);

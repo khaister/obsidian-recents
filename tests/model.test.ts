@@ -96,6 +96,13 @@ describe("sanitize", () => {
     expect(out.pins).toEqual(["a", "b"]);
   });
 
+  it("keeps the tooltip delay between 0 and 2000", () => {
+    expect(sanitize({ settings: { tooltipDelay: -5 } }).settings.tooltipDelay).toBe(0);
+    expect(sanitize({ settings: { tooltipDelay: 99999 } }).settings.tooltipDelay).toBe(2000);
+    expect(sanitize({ settings: { tooltipDelay: "x" } }).settings.tooltipDelay).toBe(100);
+    expect(sanitize({ settings: { tooltipDelay: 0 } }).settings.tooltipDelay).toBe(0);
+  });
+
   it("sanitizes the recents list", () => {
     expect(sanitizeRecents(["a", "a", 1, "b", "c"], 2)).toEqual(["a", "b"]);
     expect(sanitizeRecents({}, 5)).toEqual([]);

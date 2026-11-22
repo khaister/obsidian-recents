@@ -12,6 +12,8 @@ export interface RecentsSettings {
   hidePinnedFromRecent: boolean;
   /** Show the folder a file is in after its name. */
   showPath: boolean;
+  /** Milliseconds to wait before a row's path tooltip appears. */
+  tooltipDelay: number;
   /** Switch to the tab that already shows the file instead of opening a copy. */
   focusExistingTab: boolean;
   /** Opening a file from the list does not move it to the top. */
@@ -29,6 +31,8 @@ export interface PersistedData {
 
 export const MAX_ITEMS_LIMIT = 500;
 
+export const MAX_TOOLTIP_DELAY = 2000;
+
 export const DEFAULT_SETTINGS: RecentsSettings = {
   maxItems: 50,
   showPinned: true,
@@ -36,6 +40,7 @@ export const DEFAULT_SETTINGS: RecentsSettings = {
   sectionOrder: "pinned-first",
   hidePinnedFromRecent: false,
   showPath: true,
+  tooltipDelay: 100,
   focusExistingTab: true,
   keepOrderOnListClick: false,
   omittedPaths: [],

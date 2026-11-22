@@ -1,7 +1,7 @@
 import { PluginSettingTab, type App, type SettingDefinitionItem } from "obsidian";
 import { compilePatterns } from "./model";
 import type RecentsPlugin from "./main";
-import { MAX_ITEMS_LIMIT, type SectionOrder } from "./types";
+import { MAX_ITEMS_LIMIT, MAX_TOOLTIP_DELAY, type SectionOrder } from "./types";
 
 function lines(text: string): string[] {
   return text
@@ -43,6 +43,21 @@ export class RecentsSettingTab extends PluginSettingTab {
             name: "Show folder path",
             desc: "Show the folder each file is in after its name, to tell apart files that share a name.",
             control: { type: "toggle", key: "showPath" },
+          },
+          {
+            name: "Tooltip delay",
+            desc: "Milliseconds to wait before the full path shows when you hover over a file. Enter 0 to show it at once.",
+            control: {
+              type: "number",
+              key: "tooltipDelay",
+              min: 0,
+              max: MAX_TOOLTIP_DELAY,
+              step: 50,
+              validate: (value) =>
+                Number.isInteger(value) && value >= 0 && value <= MAX_TOOLTIP_DELAY
+                  ? undefined
+                  : "Enter a whole number from 0 to " + MAX_TOOLTIP_DELAY,
+            },
           },
         ],
       },
@@ -120,6 +135,8 @@ export class RecentsSettingTab extends PluginSettingTab {
         return settings.showPath;
       case "maxItems":
         return settings.maxItems;
+      case "tooltipDelay":
+        return settings.tooltipDelay;
       case "keepOrderOnListClick":
         return settings.keepOrderOnListClick;
       case "focusExistingTab":
@@ -151,8 +168,9 @@ export class RecentsSettingTab extends PluginSettingTab {
           return;
       }
     }
-    if (typeof value === "number" && key === "maxItems") {
-      return store.updateSettings({ maxItems: value });
+    if (typeof value === "number") {
+      if (key === "maxItems") return store.updateSettings({ maxItems: value });
+      if (key === "tooltipDelay") return store.updateSettings({ tooltipDelay: value });
     }
     if (typeof value !== "string") return;
     switch (key) {
