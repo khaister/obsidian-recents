@@ -5,6 +5,7 @@ import {
   isExternalPath,
   matchesAny,
   movePin,
+  parentPath,
   recordOpen,
   removePaths,
   renamePaths,
@@ -112,6 +113,14 @@ describe("external files", () => {
   it("shows the path on disk without the prefix", () => {
     expect(displayPath("file:/Users/me/a.md")).toBe("/Users/me/a.md");
     expect(displayPath("notes/a.md")).toBe("notes/a.md");
+  });
+
+  it("gives the folder a file is in", () => {
+    expect(parentPath("notes/sub/a.md")).toBe("notes/sub");
+    expect(parentPath("a.md")).toBe("");
+    expect(parentPath("file:/Users/me/docs/a.md")).toBe("/Users/me/docs");
+    expect(parentPath("file:C:/Users/me/a.md")).toBe("C:/Users/me");
+    expect(parentPath("file:/a.md")).toBe("");
   });
 
   it("follows a rename of an external file in both lists", () => {

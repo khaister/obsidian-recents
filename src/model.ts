@@ -18,6 +18,16 @@ export function displayPath(path: string): string {
   return isExternalPath(path) ? path.slice(EXTERNAL_PREFIX.length) : path;
 }
 
+/**
+ * The folder a file is in: the path relative to the vault root for a vault file,
+ * the directory on disk for an external one. Empty for a file at the vault root.
+ */
+export function parentPath(path: string): string {
+  const shown = displayPath(path);
+  const slash = shown.lastIndexOf("/");
+  return slash <= 0 ? "" : shown.slice(0, slash);
+}
+
 /** Put `path` at the front, drop duplicates, and cap the length. */
 export function recordOpen(list: string[], path: string, max: number): string[] {
   const next = [path, ...list.filter((p) => p !== path)];
@@ -112,6 +122,7 @@ export function sanitize(raw: unknown): PersistedData {
     showRecent: asBool(s.showRecent, DEFAULT_SETTINGS.showRecent),
     sectionOrder: asOrder(s.sectionOrder),
     hidePinnedFromRecent: asBool(s.hidePinnedFromRecent, DEFAULT_SETTINGS.hidePinnedFromRecent),
+    showPath: asBool(s.showPath, DEFAULT_SETTINGS.showPath),
     focusExistingTab: asBool(s.focusExistingTab, DEFAULT_SETTINGS.focusExistingTab),
     keepOrderOnListClick: asBool(s.keepOrderOnListClick, DEFAULT_SETTINGS.keepOrderOnListClick),
     omittedPaths: asStringArray(s.omittedPaths),

@@ -46,8 +46,23 @@
 }
 
 .recents-row-self .nav-file-title-content {
-  flex: 1 1 auto;
+  flex: 0 1 auto;
   min-width: 0;
+}
+
+/* Fills the space after the name and gives way first when the row is narrow. */
+.recents-row-path {
+  flex: 1 100 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-faint);
+  font-size: var(--font-ui-smaller);
+}
+
+.recents-row-self:not(:has(.recents-row-path)) .nav-file-title-content {
+  flex: 1 1 auto;
 }
 
 .recents-row-actions {

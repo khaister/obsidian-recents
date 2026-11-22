@@ -1,5 +1,5 @@
 import { Keymap, Menu, setIcon, type App, type HoverParent, type PaneType, type TFile } from "obsidian";
-import { displayPath, isExternalPath } from "./model";
+import { displayPath, isExternalPath, parentPath } from "./model";
 import type { Store } from "./store";
 import type { SectionId } from "./types";
 
@@ -106,10 +106,12 @@ function renderRow(
   self.setAttr("draggable", "true");
   self.setAttr("data-path", file.path);
   const external = isExternalPath(file.path);
-  if (external) self.setAttr("aria-label", displayPath(file.path));
+  self.setAttr("aria-label", displayPath(file.path));
   self.toggleClass("is-active", file.path === activePath);
 
   self.createDiv({ cls: "tree-item-inner nav-file-title-content", text: file.basename });
+  const folder = store.settings.showPath ? parentPath(file.path) : "";
+  if (folder) self.createDiv({ cls: "recents-row-path", text: folder });
   if (file.extension !== "md") self.createDiv({ cls: "nav-file-tag", text: file.extension });
 
   const actions = self.createDiv({ cls: "recents-row-actions" });

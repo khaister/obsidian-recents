@@ -38,6 +38,7 @@ Recents lists and pins files from outside your vault, the same as any other file
 | Show recent section | On | Shows or hides the Recent section. |
 | Section order | Pinned first | Chooses which section is on top. |
 | Hide pinned files from recent | Off | A pinned file shows only in the Pinned section. |
+| Show folder path | On | Shows the folder each file is in, in a fainter color after its name. Useful when several files share a name, such as README. |
 | Maximum recent files | 50 | How many files Recent keeps. Older ones drop off the end. Enter a number from 1 to 500. |
 | Keep order when opening from the list | Off | A file you open from the pane stays where it is instead of jumping to the top. |
 | Switch to an open tab | On | Clicking a file that is already open takes you to that tab. |

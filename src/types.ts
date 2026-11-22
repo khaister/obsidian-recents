@@ -10,6 +10,8 @@ export interface RecentsSettings {
   sectionOrder: SectionOrder;
   /** Leave a pinned file out of the recent section. */
   hidePinnedFromRecent: boolean;
+  /** Show the folder a file is in after its name. */
+  showPath: boolean;
   /** Switch to the tab that already shows the file instead of opening a copy. */
   focusExistingTab: boolean;
   /** Opening a file from the list does not move it to the top. */
@@ -33,6 +35,7 @@ export const DEFAULT_SETTINGS: RecentsSettings = {
   showRecent: true,
   sectionOrder: "pinned-first",
   hidePinnedFromRecent: false,
+  showPath: true,
   focusExistingTab: true,
   keepOrderOnListClick: false,
   omittedPaths: [],
