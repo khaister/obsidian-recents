@@ -58,10 +58,37 @@ Recents lists and pins files from outside your vault, the same as any other file
 
 Your pins and settings sync with your vault. The Recent list does not: your phone and your computer each keep their own.
 
+## Compared with Recent Files and Pin to Top
+
+Recents does the job of two plugins in one pane. This table compares it with [Recent Files](https://github.com/tgrosinger/recent-files-obsidian) 1.7.10 and [Pin to Top](https://github.com/valenzine/obsidian-pin-to-top) 1.0.2, based on their source code and READMEs as of November 2026.
+
+| | Recents | Recent Files | Pin to Top |
+| --- | --- | --- | --- |
+| Where it shows | Its own sidebar pane | Its own sidebar pane | Top of the file explorer |
+| List of recently opened files | Yes | Yes | No |
+| Pin files | Yes | No | Yes |
+| Pin folders | No | No | Yes |
+| Reorder pins by dragging | Yes | n/a | No |
+| Collapse or hide each section | Yes | n/a | No |
+| Recent list on each device | Kept per device | Synced with the vault | n/a |
+| Leave out files by path pattern | Yes | Yes | n/a |
+| Leave out files by tag or bookmark | No | Yes | n/a |
+| Update the list when a file is edited instead of opened | No | Yes | n/a |
+| Files outside the vault | Listed and opened, on desktop | Can be listed but fail to open ([#138](https://github.com/tgrosinger/recent-files-obsidian/issues/138)) | No |
+| Clicking an open file goes to its tab | Yes, optional | No ([#121](https://github.com/tgrosinger/recent-files-obsidian/issues/121)) | n/a |
+| Keep list order when opening from it | Optional | No ([#23](https://github.com/tgrosinger/recent-files-obsidian/issues/23)) | n/a |
+| Folder path next to each file name | Yes, beside or below, can be shortened | No | n/a |
+| Icons from the Iconic plugin | Yes | No | Not checked |
+| Titles from the Front Matter Title plugin | No | Yes | Not checked |
+| Drag a file into a note to link it | Yes | Yes | n/a |
+| Hover preview | Yes | Yes | n/a |
+| Pin, unpin and toggle commands | Yes | n/a | Yes |
+| Minimum Obsidian version | 1.14.4 | 0.16.3 | 1.0.0 |
+
 ## Credits
 
 - [Recent Files](https://github.com/tgrosinger/recent-files-obsidian) by Tony Grosinger, GPL-3.0, is the model for the recent list and the pane.
-- [Pin to Top](https://github.com/valenzine/obsidian-pin-to-top) by valenzine, MIT, is the model for pinning and for reordering pins by dragging.
+- [Pin to Top](https://github.com/valenzine/obsidian-pin-to-top) by valenzine, MIT, is the model for pinning files and for the pin commands.
 
 Recents was written from scratch, and no source code from either plugin was copied. See [NOTICE](NOTICE). For how this plugin differs from Recent Files, see the [development notes](docs/development.md#choices-that-differ-from-recent-files).
 
