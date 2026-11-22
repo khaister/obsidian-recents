@@ -1,4 +1,5 @@
 import { Keymap, Menu, setIcon, type App, type HoverParent, type PaneType, type TFile } from "obsidian";
+import { getFileIcon, knownIconIds, renderIcon } from "./iconic";
 import { displayPath, isExternalPath, parentPath } from "./model";
 import type { Store } from "./store";
 import type { SectionId } from "./types";
@@ -89,7 +90,8 @@ function renderSection(
     return;
   }
   const activePath = app.workspace.getActiveFile()?.path ?? null;
-  for (const file of files) renderRow(body, host, id, file, activePath);
+  const knownIcons = knownIconIds();
+  for (const file of files) renderRow(body, host, id, file, activePath, knownIcons);
 }
 
 function renderRow(
@@ -98,6 +100,7 @@ function renderRow(
   id: SectionId,
   file: TFile,
   activePath: string | null,
+  knownIcons: Set<string>,
 ): void {
   const { app, store } = host;
   const row = body.createDiv({ cls: "recents-row tree-item nav-file" });
@@ -109,6 +112,8 @@ function renderRow(
   self.setAttr("aria-label", displayPath(file.path));
   self.toggleClass("is-active", file.path === activePath);
 
+  const fileIcon = getFileIcon(app, file.path);
+  if (fileIcon) renderIcon(self.createDiv({ cls: "recents-row-icon" }), fileIcon, knownIcons);
   self.createDiv({ cls: "tree-item-inner nav-file-title-content", text: file.basename });
   const folder = store.settings.showPath ? parentPath(file.path) : "";
   if (folder) self.createDiv({ cls: "recents-row-path", text: folder });

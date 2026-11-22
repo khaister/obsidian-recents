@@ -65,6 +65,22 @@
   flex: 1 1 auto;
 }
 
+.recents-row-icon {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+}
+
+.recents-row-icon .svg-icon {
+  width: var(--icon-s);
+  height: var(--icon-s);
+}
+
+.recents-emoji {
+  font-size: var(--font-ui-small);
+  line-height: 1;
+}
+
 .recents-row-actions {
   display: none;
   flex: 0 0 auto;
