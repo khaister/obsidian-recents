@@ -113,6 +113,21 @@
   align-items: center;
 }
 
+/*
+ * With the path on its own line, the icon and extension tag stay on the name's
+ * line instead of centering on the whole row.
+ */
+.recents-row-self.has-path-below .recents-row-icon,
+.recents-row-self.has-path-below .nav-file-tag {
+  align-self: flex-start;
+  height: calc(var(--line-height-tight) * 1em);
+}
+
+.recents-row-self.has-path-below .nav-file-tag {
+  display: flex;
+  align-items: center;
+}
+
 .recents-row-icon .svg-icon {
   width: var(--icon-s);
   height: var(--icon-s);

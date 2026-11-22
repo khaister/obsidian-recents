@@ -250,6 +250,7 @@ function renderRow(
   const { pathLocation } = store.settings;
   const text = self.createDiv({ cls: "recents-row-text" });
   text.toggleClass("is-below", pathLocation === "below");
+  self.toggleClass("has-path-below", pathLocation === "below");
   const nameEl = text.createDiv({ cls: "tree-item-inner nav-file-title-content", text: file.basename });
   const { shortenFolders, keepFolders } = store.settings;
   const hasFolder = folderLabel(file.path, pathStyle) !== "";
