@@ -13,7 +13,7 @@ cp main.js manifest.json styles.css <vault>/.obsidian/plugins/recents/
 
 Then turn it on under Settings > Community plugins. Releases attach the same three files. Requires Obsidian 1.14.4 or newer.
 
-For development, symlink the three files into the vault instead of copying them, so each build shows up after a plugin reload.
+While developing, symlink the three files instead of copying them. Each build then shows up after a plugin reload.
 
 ## Where the data lives
 
@@ -21,10 +21,10 @@ Pins and options are in the plugin's `data.json`, so they sync with the vault. T
 
 ## Choices that differ from Recent Files
 
-Recent Files has open issues for a few things this plugin handles by design:
+Recents settles several open Recent Files issues in its design:
 
-- Recent lists do not sync between devices ([#34](https://github.com/tgrosinger/recent-files-obsidian/issues/34)). Here they never do.
-- Files outside the vault can be recorded and then fail to open ([#138](https://github.com/tgrosinger/recent-files-obsidian/issues/138)). Here they open, and they are not dropped from the list when they cannot be found.
+- Recent Files keeps one recent list in the vault, so it syncs between devices, and [#34](https://github.com/tgrosinger/recent-files-obsidian/issues/34) asks for it not to. Here each device keeps its own list.
+- Files outside the vault can be recorded and then fail to open ([#138](https://github.com/tgrosinger/recent-files-obsidian/issues/138)). Here they open, and they stay in the list while they can't be found, for example when a drive is unplugged.
 - Clicking a file that is already open does not switch to its tab ([#121](https://github.com/tgrosinger/recent-files-obsidian/issues/121)). Here it does, unless you turn that off.
 - Opening a file from the list always moves it to the top ([#23](https://github.com/tgrosinger/recent-files-obsidian/issues/23)). Here that is an option.
 - Pinning ([#139](https://github.com/tgrosinger/recent-files-obsidian/issues/139), [#126](https://github.com/tgrosinger/recent-files-obsidian/issues/126)) is built in.
@@ -33,7 +33,7 @@ Other differences: a folder rename updates every pin and recent entry under it. 
 
 ## Iconic icons
 
-Iconic documents no API for other plugins. `src/iconic.ts` reads the loaded plugin from `app.plugins.plugins.iconic` and calls two of its internal members, `getFileItem(path)` and `ruleManager.checkRuling("file", id)`, the same pair Iconic uses to draw its own file lists. Every member is checked before use and the lookup runs inside a try/catch, so an Iconic update that changes them means no icons, not an error. It was written against Iconic 1.1.11.
+Iconic documents no API for other plugins. `src/iconic.ts` reads the loaded plugin from `app.plugins.plugins.iconic` and calls two of its internal members, `getFileItem(path)` and `ruleManager.checkRuling("file", id)`, the same pair Iconic uses to draw its own file lists. Every member is checked before use and the lookup runs inside a try/catch, so if an Iconic update changes them, rows lose their icons and nothing else breaks. It was written against Iconic 1.1.11.
 
 Only icons a user assigned are shown, not Iconic's default file icons. Files outside the vault never get one. The pane reads icons each time it redraws, so a change made in Iconic appears on the next redraw.
 
@@ -55,7 +55,7 @@ The logic that does not need Obsidian (`src/model.ts`, `src/store.ts`) has unit 
 
 ## Releasing
 
-Run `make release` from a clean `main` branch. The helper selects the next date-based version (`YYYY.MMDD.N`, starting at 1 each day), updates and commits `manifest.json` and `versions.json`, creates an annotated tag without a `v` prefix, pushes `main` and the tag together, builds `main.js` from the tag in a temporary worktree, and publishes a GitHub release with `main.js`, `manifest.json` and `styles.css` attached. Requires Git, Python 3, pnpm and an authenticated [GitHub CLI](https://cli.github.com/).
+Run `make release` from a clean `main` branch. It picks the next date-based version (`YYYY.MMDD.N`, starting at 1 each day) and commits it to `manifest.json`, `versions.json` and `package.json`. Then it tags that commit without a `v` prefix and pushes `main` and the tag together. Finally it builds `main.js` from the tag in a temporary worktree and publishes a GitHub release with `main.js`, `manifest.json` and `styles.css` attached. It needs Git, Python 3, pnpm and a signed-in [GitHub CLI](https://cli.github.com/).
 
 ```sh
 make release-dry-run

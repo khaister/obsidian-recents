@@ -1,6 +1,6 @@
 # Recents
 
-Recents adds a sidebar pane that lists the notes you opened lately and the notes you pinned, so you can get back to them in one click.
+Recents adds a sidebar pane with the files you opened lately and the files you pinned, one click away.
 
 ## Install
 
@@ -10,7 +10,7 @@ Recents needs Obsidian 1.14.4 or newer. To install it by hand, see [development.
 
 ## Use
 
-Open the pane with the history icon in the left ribbon, or run **Recents: Open pane** from the command palette. It opens as a tab in the left sidebar. You can drag it next to the file explorer or anywhere else.
+Open the pane with the history icon in the left ribbon, or run **Recents: Open pane** from the command palette. It opens as a tab in the left sidebar, and you can drag it next to the file explorer or anywhere else.
 
 The pane has two sections, **Pinned** and **Recent**. Click a section title to collapse it.
 
@@ -18,7 +18,7 @@ The pane has two sections, **Pinned** and **Recent**. Click a section title to c
 | --- | --- |
 | Open a file | Click it. If the file is already open, you go to that tab. |
 | Open in a new tab | Hold Ctrl (Cmd on a Mac) and click, or middle-click. |
-| Pin or unpin a file | Click the pin icon on its row, or right-click the file anywhere in Obsidian and choose Pin or Unpin. |
+| Pin or unpin a file | Click the pin icon on its row, or right-click the file anywhere in Obsidian and choose **Pin to recents** or **Unpin from recents**. |
 | Reorder pins | Drag a pinned file above or below another one. |
 | Remove a file from Recent | Click the x on its row. |
 | Insert a link to a file | Drag its row into a note. |
@@ -28,11 +28,11 @@ The command palette also has **Pin current file**, **Unpin current file**, **Tog
 
 ## Icons
 
-If you use the [Iconic](https://github.com/gfxholo/iconic) plugin, the icons and colors you gave your files show next to their names here. Files without an icon stay plain, and nothing changes if Iconic is off. After you change an icon, reopen the pane to see it.
+If you use the [Iconic](https://github.com/gfxholo/iconic) plugin, the icons and colors you gave your files show next to their names. Files without an icon stay plain, and if Iconic is off, the pane looks as it would without it. After you change an icon, reopen the pane to see it.
 
 ## Files outside your vault
 
-Recents lists and pins files from outside your vault, the same as any other file. Hover over a row to see where the file is on your computer. These files open on desktop only, so on a phone a pinned outside file stays in your pins but does not show in the pane. Dragging one into a note and previewing one are not available.
+Recents lists and pins files from outside your vault like any other file, and hovering over one shows where it is on your computer. Obsidian opens these files on desktop only. On a phone, a pinned outside file stays in your pins but is not shown. You can't drag one into a note or preview it.
 
 ## Settings
 
@@ -43,7 +43,7 @@ Recents lists and pins files from outside your vault, the same as any other file
 | Section order | Pinned first | Chooses which section is on top. |
 | Hide pinned files from recent | Off | A pinned file shows only in the Pinned section. |
 | Folder path | Beside the name | Shows the folder each file is in, in a fainter color, to tell apart files that share a name such as README. Choose Off, Beside the name, or Below the name. Below the name, a long path wraps onto more lines. |
-| Shorten folder names | Never | Cuts each folder to the fewest letters that still tell it apart from the folders beside it, so `home/improvements/bathroom` can show as `h/imp/bathroom`. Shortened folders look a little fainter. Choose Never, Always, or When clipped, which shortens from the left only as far as needed to fit: on one line beside the name, or on two lines below it. Hidden when Folder path is Off. |
+| Shorten folder names | Never | Cuts each folder to the fewest letters that still tell it apart from the folders beside it, so `home/improvements/bathroom` can show as `h/im/bathroom`. Shortened folders look a little fainter. Choose Never, Always, or When clipped, which shortens only as much as needed, starting from the left: to fit one line beside the name, or two lines below it. Hidden when Folder path is Off. |
 | Folders kept whole | 1 | How many of the innermost folders are never shortened. 1 keeps the folder the file is in. Shown when shortening is on. |
 | Show absolute path | Off | Starts the path at the root of your disk instead of your vault, for example `/Users/you/vault/home`. Desktop only. Hidden when Folder path is Off. |
 | Path tooltip | When hidden | Shows the full path when you hover over a file. Choose Never, Always, or When hidden, which shows it only if the row does not already show the whole path because the folder path is off, shortened or cut off. |
@@ -60,7 +60,7 @@ Your pins and settings sync with your vault. The Recent list does not: your phon
 
 ## Compared with Recent Files and Pin to Top
 
-Recents does the job of two plugins in one pane. This table compares it with [Recent Files](https://github.com/tgrosinger/recent-files-obsidian) 1.7.10 and [Pin to Top](https://github.com/valenzine/obsidian-pin-to-top) 1.0.2, based on their source code and READMEs as of November 2026.
+Recents puts a recent list and pins in one pane, which otherwise takes two plugins. This table compares it with [Recent Files](https://github.com/tgrosinger/recent-files-obsidian) 1.7.10 and [Pin to Top](https://github.com/valenzine/obsidian-pin-to-top) 1.0.2, based on their source code and READMEs as of November 2026.
 
 | | Recents | Recent Files | Pin to Top |
 | --- | --- | --- | --- |
@@ -70,7 +70,7 @@ Recents does the job of two plugins in one pane. This table compares it with [Re
 | Pin folders | No | No | Yes |
 | Reorder pins by dragging | Yes | n/a | No |
 | Collapse or hide each section | Yes | n/a | No |
-| Recent list on each device | Kept per device | Synced with the vault | n/a |
+| Recent list across devices | Each device keeps its own | One list, synced with the vault | n/a |
 | Leave out files by path pattern | Yes | Yes | n/a |
 | Leave out files by tag or bookmark | No | Yes | n/a |
 | Update the list when a file is edited instead of opened | No | Yes | n/a |
@@ -90,7 +90,7 @@ Recents does the job of two plugins in one pane. This table compares it with [Re
 - [Recent Files](https://github.com/tgrosinger/recent-files-obsidian) by Tony Grosinger, GPL-3.0, is the model for the recent list and the pane.
 - [Pin to Top](https://github.com/valenzine/obsidian-pin-to-top) by valenzine, MIT, is the model for pinning files and for the pin commands.
 
-Recents was written from scratch, and no source code from either plugin was copied. See [NOTICE](NOTICE). For how this plugin differs from Recent Files, see the [development notes](docs/development.md#choices-that-differ-from-recent-files).
+Recents was written from scratch, with no source code copied from either plugin. See [NOTICE](NOTICE). The [development notes](docs/development.md#choices-that-differ-from-recent-files) explain where Recents departs from Recent Files and why.
 
 ## License
 
