@@ -1,0 +1,93 @@
+name: Bug report
+description: Something looks wrong or broken with the plugin.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. The fields below are the minimum needed to reproduce the problem. A screenshot and the exact steps help the most.
+  - type: input
+    id: plugin-version
+    attributes:
+      label: Plugin version
+      description: Shown under Settings > Community plugins > Recents, or in the plugin's `manifest.json`.
+      placeholder: "2026.1122.1"
+    validations:
+      required: true
+  - type: input
+    id: obsidian-version
+    attributes:
+      label: Obsidian version
+      description: Shown in Settings > General.
+      placeholder: "1.x.x"
+    validations:
+      required: true
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating system
+      options:
+        - macOS
+        - Windows
+        - Linux
+        - iOS or iPadOS
+        - Android
+        - Other
+    validations:
+      required: true
+  - type: dropdown
+    id: where
+    attributes:
+      label: Where does it happen?
+      options:
+        - Pinned section
+        - Recent section
+        - Opening a file from the pane
+        - Pinning or unpinning
+        - Drag and drop
+        - Plugin options
+        - Commands or the ribbon icon
+        - Somewhere else
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: What you did, step by step, starting from a fresh Obsidian window.
+      placeholder: |
+        1. Pin a file named ...
+        2. Rename it to ...
+        3. See ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected-actual
+    attributes:
+      label: Expected and actual result
+      description: What you expected to see, and what you saw instead.
+    validations:
+      required: true
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: Screenshot
+      description: Paste or drag an image here if the problem is visual.
+  - type: textarea
+    id: console
+    attributes:
+      label: Console errors
+      description: Open the developer console (Ctrl+Shift+I, or Cmd+Option+I on macOS) and paste any red errors from the moment the problem happens.
+      render: text
+  - type: dropdown
+    id: isolated
+    attributes:
+      label: Does it still happen with other plugins and CSS snippets turned off?
+      description: Turn off the other community plugins and CSS snippets, then check again. Other plugins often change the sidebar.
+      options:
+        - Yes, it still happens
+        - No, it goes away
+        - I have not tried
+    validations:
+      required: true
