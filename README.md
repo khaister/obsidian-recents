@@ -1,101 +1,58 @@
-# Recents for Obsidian
+# Recents
 
-An Obsidian plugin that keeps your recently opened pinned files in a sidebar pane.
+Recents adds a sidebar pane that lists the notes you opened lately and the notes you pinned, so you can get back to them in one click.
 
 ## Install
 
-Recents is not in the community directory yet. To try it, build it and copy the output into a vault:
+In Obsidian, open Settings, go to Community plugins, choose Browse, and search for Recents. Install it, then turn it on.
 
-```sh
-pnpm install
-pnpm build
-mkdir -p <vault>/.obsidian/plugins/recents
-cp main.js manifest.json styles.css <vault>/.obsidian/plugins/recents/
-```
-
-Then turn it on under Settings > Community plugins. Releases will attach the same three files. Requires Obsidian 1.14.4 or newer.
+Recents needs Obsidian 1.14.4 or newer. To install it by hand, see [development.md](docs/development.md).
 
 ## Use
 
-Open the pane with the history icon in the ribbon or the **Recents: Open pane** command. It opens as a tab in the left sidebar.
+Open the pane with the history icon in the left ribbon, or run **Recents: Open pane** from the command palette. It opens as a tab in the left sidebar. You can drag it next to the file explorer or anywhere else.
 
 The pane has two sections, **Pinned** and **Recent**. Click a section title to collapse it.
 
-| Action | How |
+| To do this | Do this |
 | --- | --- |
 | Open a file | Click it. If the file is already open, you go to that tab. |
-| Open in a new tab | Ctrl or Cmd click, or middle click. |
-| Pin or unpin | The pin icon on a row, the row's right-click menu, a file's right-click menu anywhere in Obsidian, or the pin commands. |
-| Reorder pins | Drag a pinned row above or below another one. |
-| Remove from recent | The x icon on a row, or its right-click menu. |
-| Insert a link | Drag a row into a note. The link uses your link format from Settings > Files and links. |
-| Preview | Hold Ctrl or Cmd and hover a row. Change the modifier requirement under Settings > Core plugins > Page preview. |
+| Open in a new tab | Hold Ctrl (Cmd on a Mac) and click, or middle-click. |
+| Pin or unpin a file | Click the pin icon on its row, or right-click the file anywhere in Obsidian and choose Pin or Unpin. |
+| Reorder pins | Drag a pinned file above or below another one. |
+| Remove a file from Recent | Click the x on its row. |
+| Insert a link to a file | Drag its row into a note. |
+| Preview a file | Hold Ctrl (Cmd on a Mac) and hover over its row. |
 
-Commands: Open pane, Pin current file, Unpin current file, Toggle pin for current file, Clear recent files.
+The command palette also has **Pin current file**, **Unpin current file**, **Toggle pin for current file** and **Clear recent files**.
 
-## Files outside the vault
+## Files outside your vault
 
-Obsidian 1.14.4 added support for opening files outside the vault. Recents lists and pins them like any other file, and hovering a row shows the path on disk. Obsidian opens these files on desktop only, so on a phone a pinned outside file stays in your pins but does not show in the pane. Two things do not work for outside files: dragging a row into a note to insert a link, and the hover preview.
+Recents lists and pins files from outside your vault, the same as any other file. Hover over a row to see where the file is on your computer. These files open on desktop only, so on a phone a pinned outside file stays in your pins but does not show in the pane. Dragging one into a note and previewing one are not available.
 
-## Options
+## Settings
 
-| Option | Default | What it does |
+| Setting | Default | What it does |
 | --- | --- | --- |
-| Show pinned section | On | Shows or hides the pinned section. |
-| Show recent section | On | Shows or hides the recent section. |
-| Section order | Pinned first | Puts either section on top. |
-| Hide pinned files from recent | Off | A pinned file appears only in the pinned section. |
-| Maximum recent files | 50 | Older files drop off the end. Type any whole number from 1 to 500. |
-| Keep order when opening from the list | Off | A file you open from the pane stays where it is. |
-| Switch to an open tab | On | Clicking a file that is already open goes to its tab. |
-| Path patterns | None | Regular expressions, one per line. Matching files never enter the recent list. |
+| Show pinned section | On | Shows or hides the Pinned section. |
+| Show recent section | On | Shows or hides the Recent section. |
+| Section order | Pinned first | Chooses which section is on top. |
+| Hide pinned files from recent | Off | A pinned file shows only in the Pinned section. |
+| Maximum recent files | 50 | How many files Recent keeps. Older ones drop off the end. Enter a number from 1 to 500. |
+| Keep order when opening from the list | Off | A file you open from the pane stays where it is instead of jumping to the top. |
+| Switch to an open tab | On | Clicking a file that is already open takes you to that tab. |
+| Path patterns | None | Files to keep out of Recent, one pattern per line. For example, `^daily/` skips everything in a folder named daily, and `\.png$` skips PNG images. |
 
-## Where the data lives
+## Syncing
 
-Pins and options are in the plugin's `data.json`, so they sync with the vault. The recent list is stored in the app's local storage for the vault and stays on each device. Your phone and your desktop keep their own recent lists but share pins.
-
-## Choices that differ from Recent Files
-
-Recent Files has open issues for a few things this plugin handles by design:
-
-- Recent lists do not sync between devices ([#34](https://github.com/tgrosinger/recent-files-obsidian/issues/34)). Here they never do.
-- Files outside the vault can be recorded and then fail to open ([#138](https://github.com/tgrosinger/recent-files-obsidian/issues/138)). Here they open, and they are not dropped from the list when they cannot be found.
-- Clicking a file that is already open does not switch to its tab ([#121](https://github.com/tgrosinger/recent-files-obsidian/issues/121)). Here it does, unless you turn that off.
-- Opening a file from the list always moves it to the top ([#23](https://github.com/tgrosinger/recent-files-obsidian/issues/23)). Here that is an option.
-- Pinning ([#139](https://github.com/tgrosinger/recent-files-obsidian/issues/139), [#126](https://github.com/tgrosinger/recent-files-obsidian/issues/126)) is built in.
-
-Other differences: a folder rename updates every pin and recent entry under it. The list stores paths only, so a renamed note never shows a stale title.
-
-## Releasing
-
-Run `make release` from a clean `main` branch. The helper selects the next date-based version (`YYYY.MMDD.N`, starting at 1 each day), updates and commits `manifest.json` and `versions.json`, creates an annotated tag without a `v` prefix, pushes `main` and the tag together, builds `main.js` from the tag in a temporary worktree, and publishes a GitHub release with `main.js`, `manifest.json` and `styles.css` attached. Requires Git, Python 3, pnpm and an authenticated [GitHub CLI](https://cli.github.com/).
-
-```sh
-make release-dry-run
-make release
-make release ARGS="--version 2026.1122.1"
-```
-
-`--dry-run` uses local tags and does not change files or publish anything. Use `ARGS="--no-release"` to push without publishing, or `ARGS="--release-only 2026.1122.1"` to publish an existing tag using its original files. Run `./scripts/release.sh --help` for all options.
-
-## Development
-
-```sh
-pnpm install
-pnpm dev      # rebuild main.js on every change
-pnpm lint
-pnpm test
-pnpm build
-```
-
-The logic that does not need Obsidian (`src/model.ts`, `src/store.ts`) has unit tests. The pane, settings and plugin entry run only inside Obsidian.
+Your pins and settings sync with your vault. The Recent list does not: your phone and your computer each keep their own.
 
 ## Credits
 
-- [Recent Files](https://github.com/tgrosinger/recent-files-obsidian) by Tony Grosinger, GPL-3.0. It is the reference for the recent list and the pane's behavior.
-- [Pin to Top](https://github.com/valenzine/obsidian-pin-to-top) by valenzine, MIT. It is the reference for pinning and for reordering pins by dragging.
+- [Recent Files](https://github.com/tgrosinger/recent-files-obsidian) by Tony Grosinger, GPL-3.0, is the model for the recent list and the pane.
+- [Pin to Top](https://github.com/valenzine/obsidian-pin-to-top) by valenzine, MIT, is the model for pinning and for reordering pins by dragging.
 
-Recents was written from scratch. No source code from either plugin was copied. See [NOTICE](NOTICE).
+Recents was written from scratch, and no source code from either plugin was copied. See [NOTICE](NOTICE). For how this plugin differs from Recent Files, see the [development notes](docs/development.md#choices-that-differ-from-recent-files).
 
 ## License
 
