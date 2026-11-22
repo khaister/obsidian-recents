@@ -44,7 +44,7 @@ export function renderSections(container: HTMLElement, host: SectionsHost): () =
 
   const visible = sections.filter((s) => s.visible);
   if (visible.length === 0) {
-    container.createDiv({ cls: "recents-empty", text: "Both sections are hidden. Turn one on in the plugin options." });
+    container.createDiv({ cls: "recents-empty", text: "Both sections are hidden. Turn one on in the Recents settings." });
     return () => undefined;
   }
   for (const section of visible) renderSection(container, host, section.id, section.title, section.paths, fits);

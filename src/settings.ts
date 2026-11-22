@@ -47,7 +47,7 @@ export class RecentsSettingTab extends PluginSettingTab {
         items: [
           {
             name: "Folder path",
-            desc: "Show the folder each file is in, to tell apart files that share a name. Below the name, a long path wraps onto more lines.",
+            desc: "Show the folder each file is in, so files with the same name are easy to tell apart. Below the name, a long path wraps onto more lines.",
             control: {
               type: "dropdown",
               key: "pathLocation",
@@ -56,7 +56,7 @@ export class RecentsSettingTab extends PluginSettingTab {
           },
           {
             name: "Shorten folder names",
-            desc: "Cut each folder to the fewest letters that still tell it apart from the folders beside it, so home/improvements/bathroom can show as h/imp/bathroom. When clipped shortens from the left, only as far as needed to fit: on one line beside the name, or on two lines below it.",
+            desc: "Cut each folder to the fewest letters that tell it apart from the folders next to it, such as h/im/bathroom for home/improvements/bathroom. When clipped shortens only as much as needed, starting from the left: to fit one line beside the name, or two lines below it.",
             visible: () => this.plugin.store.settings.pathLocation !== "off",
             control: {
               type: "dropdown",
@@ -91,7 +91,7 @@ export class RecentsSettingTab extends PluginSettingTab {
           },
           {
             name: "Path tooltip",
-            desc: "Show the full path when you hover over a file. When hidden shows it only if the row does not already show the whole path, because the folder path is off, shortened or cut off.",
+            desc: "Show the full path when you hover over a file. When hidden shows it only when the row can't show the whole path, because the folder path is off, shortened or cut off.",
             control: {
               type: "dropdown",
               key: "tooltipMode",
@@ -100,7 +100,7 @@ export class RecentsSettingTab extends PluginSettingTab {
           },
           {
             name: "Tooltip position",
-            desc: "Which side of the file the full path appears on.",
+            desc: "Where the full path appears, next to the file.",
             visible: () => this.plugin.store.settings.tooltipMode !== "never",
             control: {
               type: "dropdown",
@@ -168,7 +168,7 @@ export class RecentsSettingTab extends PluginSettingTab {
         items: [
           {
             name: "Path patterns",
-            desc: "Regular expressions, one per line, tested against the full path. Matching files are not added to the recent list.",
+            desc: "Files to keep out of the recent list, one regular expression per line, matched against the full path.",
             render: (setting) => this.renderPathPatterns(setting),
           },
         ],
