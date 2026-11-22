@@ -1,7 +1,7 @@
 import { PluginSettingTab, type App, type Setting, type SettingDefinitionItem } from "obsidian";
 import { compilePatterns } from "./model";
 import type RecentsPlugin from "./main";
-import { MAX_ITEMS_LIMIT, MAX_TOOLTIP_DELAY, type PathLocation, type SectionOrder, type ShortenMode, type TooltipMode, type TooltipPosition } from "./types";
+import { MAX_ITEMS_LIMIT, MAX_KEEP_FOLDERS, MAX_TOOLTIP_DELAY, type PathLocation, type SectionOrder, type ShortenMode, type TooltipMode, type TooltipPosition } from "./types";
 
 function lines(text: string): string[] {
   return text
@@ -56,12 +56,31 @@ export class RecentsSettingTab extends PluginSettingTab {
           },
           {
             name: "Shorten folder names",
-            desc: "Cut each folder to its first letter, so home/improvements/bathroom shows as h/i/b. When clipped does this only for paths that do not fit: on one line beside the name, or on two lines below it.",
+            desc: "Cut each folder to the fewest letters that still tell it apart from the folders beside it, so home/improvements/bathroom can show as h/imp/bathroom. When clipped shortens from the left, only as far as needed to fit: on one line beside the name, or on two lines below it.",
             visible: () => this.plugin.store.settings.pathLocation !== "off",
             control: {
               type: "dropdown",
               key: "shortenFolders",
               options: { never: "Never", clipped: "When clipped", always: "Always" },
+            },
+          },
+          {
+            name: "Folders kept whole",
+            desc: "How many of the innermost folders are never shortened. 1 keeps the folder the file is in.",
+            visible: () => {
+              const { pathLocation, shortenFolders } = this.plugin.store.settings;
+              return pathLocation !== "off" && shortenFolders !== "never";
+            },
+            control: {
+              type: "number",
+              key: "keepFolders",
+              min: 0,
+              max: MAX_KEEP_FOLDERS,
+              step: 1,
+              validate: (value) =>
+                Number.isInteger(value) && value >= 0 && value <= MAX_KEEP_FOLDERS
+                  ? undefined
+                  : "Enter a whole number from 0 to " + MAX_KEEP_FOLDERS,
             },
           },
           {
@@ -201,6 +220,8 @@ export class RecentsSettingTab extends PluginSettingTab {
         return settings.maxItems;
       case "tooltipMode":
         return settings.tooltipMode;
+      case "keepFolders":
+        return settings.keepFolders;
       case "tooltipPosition":
         return settings.tooltipPosition;
       case "tooltipDelay":
@@ -237,6 +258,7 @@ export class RecentsSettingTab extends PluginSettingTab {
     if (typeof value === "number") {
       if (key === "maxItems") return store.updateSettings({ maxItems: value });
       if (key === "tooltipDelay") return store.updateSettings({ tooltipDelay: value });
+      if (key === "keepFolders") return store.updateSettings({ keepFolders: value });
     }
     if (typeof value !== "string") return;
     switch (key) {
@@ -247,7 +269,9 @@ export class RecentsSettingTab extends PluginSettingTab {
         // Shortening and absolute path only show while a path does.
         return this.update();
       case "shortenFolders":
-        return store.updateSettings({ shortenFolders: value as ShortenMode });
+        store.updateSettings({ shortenFolders: value as ShortenMode });
+        // Folders kept whole only shows while shortening is on.
+        return this.update();
       case "tooltipPosition":
         return store.updateSettings({ tooltipPosition: value as TooltipPosition });
       case "tooltipMode":

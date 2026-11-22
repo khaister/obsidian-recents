@@ -1,6 +1,7 @@
 import {
   DEFAULT_SETTINGS,
   MAX_ITEMS_LIMIT,
+  MAX_KEEP_FOLDERS,
   MAX_TOOLTIP_DELAY,
   type PathLocation,
   type PersistedData,
@@ -33,39 +34,106 @@ export function parentPath(path: string): string {
   return slash <= 0 ? "" : shown.slice(0, slash);
 }
 
-/** Cut every folder name to its first letter: "home/improvements" becomes "h/i". */
-export function shortenPath(folder: string): string {
-  return folder
-    .split("/")
-    .map((segment) => (segment === "" || /^[A-Za-z]:$/.test(segment) ? segment : (Array.from(segment)[0] ?? "")))
-    .join("/");
-}
-
 export interface PathStyle {
   /** Start from the root of the disk. Needs `base`; falls back to the vault path without it. */
   absolute: boolean;
   /** Absolute path of the vault folder, when the platform can say. */
   base: string | null;
-  shorten: boolean;
+}
+
+function normalizeBase(base: string): string {
+  return base.replace(/\\/g, "/").replace(/\/+$/, "");
 }
 
 function absoluteFrom(base: string, relative: string): string {
-  const root = base.replace(/\\/g, "/").replace(/\/+$/, "");
+  const root = normalizeBase(base);
   if (!relative) return root || "/";
   return root + "/" + relative;
 }
 
-/** The folder text for a row: relative to the vault root, or absolute, and optionally shortened. */
+/** The folder text for a row in full: relative to the vault root, or absolute. */
 export function folderLabel(path: string, style: PathStyle): string {
-  let folder = parentPath(path);
-  if (style.absolute && style.base && !isExternalPath(path)) folder = absoluteFrom(style.base, folder);
-  return style.shorten ? shortenPath(folder) : folder;
+  const folder = parentPath(path);
+  if (style.absolute && style.base && !isExternalPath(path)) return absoluteFrom(style.base, folder);
+  return folder;
 }
 
 /** The full path of a file, with its name, for a tooltip. */
-export function fullPathLabel(path: string, style: Pick<PathStyle, "absolute" | "base">): string {
+export function fullPathLabel(path: string, style: PathStyle): string {
   if (style.absolute && style.base && !isExternalPath(path)) return absoluteFrom(style.base, path);
   return displayPath(path);
+}
+
+/**
+ * The shortest start of `name` that no other folder in `siblings` begins with,
+ * so the short form still points at one folder. Leading dots are kept, so
+ * ".obsidian" becomes ".o". Without a sibling list, the first letter is used.
+ * Comparison ignores case, which can only make the prefix longer.
+ */
+export function shortSegment(name: string, siblings: string[] | null): string {
+  if (name === "" || /^[A-Za-z]:$/.test(name)) return name;
+  const dots = name.length - name.replace(/^\.+/, "").length;
+  const chars = Array.from(name.slice(dots));
+  if (chars.length === 0) return name;
+  const lead = name.slice(0, dots);
+  if (siblings === null) return lead + chars[0];
+  const others = siblings.filter((s) => s !== name).map((s) => s.toLowerCase());
+  for (let j = 1; j <= chars.length; j++) {
+    const prefix = lead + chars.slice(0, j).join("");
+    const lower = prefix.toLowerCase();
+    if (!others.some((o) => o.startsWith(lower))) return prefix;
+  }
+  return name;
+}
+
+/** One folder in a path, with the short form it can be cut to. */
+export interface FolderSegment {
+  name: string;
+  short: string;
+}
+
+/**
+ * Split the folder a file is in into segments that can each be shortened.
+ * `siblingsOf` lists the folders inside a vault folder ("" is the vault root),
+ * or returns null when it cannot say. Folders outside the vault, on the way to
+ * it or holding an external file, use their first letter.
+ */
+export function folderSegments(
+  path: string,
+  style: PathStyle,
+  siblingsOf: (vaultFolder: string) => string[] | null,
+): FolderSegment[] {
+  const outside = (name: string): FolderSegment => ({ name, short: shortSegment(name, null) });
+  if (isExternalPath(path)) {
+    const folder = parentPath(path);
+    return folder ? folder.split("/").map(outside) : [];
+  }
+  const relative = parentPath(path);
+  const parts = relative ? relative.split("/") : [];
+  const segments: FolderSegment[] = [];
+  if (style.absolute && style.base) {
+    const base = normalizeBase(style.base);
+    segments.push(...(base ? base.split("/") : [""]).map(outside));
+  }
+  parts.forEach((name, i) => {
+    segments.push({ name, short: shortSegment(name, siblingsOf(parts.slice(0, i).join("/"))) });
+  });
+  return segments;
+}
+
+/** Indexes of the segments that may be shortened: every one that gets shorter, except the last `keepLast`. */
+export function shortenableIndexes(segments: FolderSegment[], keepLast: number): number[] {
+  const limit = segments.length - Math.max(0, keepLast);
+  const out: number[] = [];
+  for (let i = 0; i < limit; i++) if (segments[i].short !== segments[i].name) out.push(i);
+  return out;
+}
+
+/** Join segments back into a path, shortening the first `count` shortenable ones. */
+export function joinSegments(segments: FolderSegment[], shortenable: number[], count: number): string {
+  const cut = new Set(shortenable.slice(0, count));
+  const joined = segments.map((s, i) => (cut.has(i) ? s.short : s.name)).join("/");
+  return joined === "" && segments.length > 0 ? "/" : joined;
 }
 
 /** Put `path` at the front, drop duplicates, and cap the length. */
@@ -182,6 +250,8 @@ export function sanitize(raw: unknown): PersistedData {
   const maxRaw = typeof s.maxItems === "number" && Number.isFinite(s.maxItems) ? s.maxItems : DEFAULT_SETTINGS.maxItems;
   const delayRaw =
     typeof s.tooltipDelay === "number" && Number.isFinite(s.tooltipDelay) ? s.tooltipDelay : DEFAULT_SETTINGS.tooltipDelay;
+  const keepRaw =
+    typeof s.keepFolders === "number" && Number.isFinite(s.keepFolders) ? s.keepFolders : DEFAULT_SETTINGS.keepFolders;
   const settings: RecentsSettings = {
     maxItems: Math.min(MAX_ITEMS_LIMIT, Math.max(1, Math.round(maxRaw))),
     showPinned: asBool(s.showPinned, DEFAULT_SETTINGS.showPinned),
@@ -190,6 +260,7 @@ export function sanitize(raw: unknown): PersistedData {
     hidePinnedFromRecent: asBool(s.hidePinnedFromRecent, DEFAULT_SETTINGS.hidePinnedFromRecent),
     pathLocation: asPathLocation(s.pathLocation, s.showPath),
     shortenFolders: asShortenMode(s.shortenFolders, s.shortenPath),
+    keepFolders: Math.min(MAX_KEEP_FOLDERS, Math.max(0, Math.round(keepRaw))),
     absolutePath: asBool(s.absolutePath, DEFAULT_SETTINGS.absolutePath),
     tooltipMode: asTooltipMode(s.tooltipMode),
     tooltipPosition: asTooltipPosition(s.tooltipPosition),

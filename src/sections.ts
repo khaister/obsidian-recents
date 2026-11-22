@@ -1,6 +1,14 @@
-import { FileSystemAdapter, Keymap, Menu, setIcon, setTooltip, type App, type HoverParent, type PaneType, type TFile } from "obsidian";
+import { FileSystemAdapter, Keymap, Menu, TFolder, setIcon, setTooltip, type App, type HoverParent, type PaneType, type TFile } from "obsidian";
 import { getFileIcon, knownIconIds, renderIcon } from "./iconic";
-import { folderLabel, fullPathLabel, isExternalPath, type PathStyle } from "./model";
+import {
+  folderLabel,
+  folderSegments,
+  fullPathLabel,
+  isExternalPath,
+  shortenableIndexes,
+  type FolderSegment,
+  type PathStyle,
+} from "./model";
 import type { Store } from "./store";
 import type { SectionId, TooltipPosition } from "./types";
 
@@ -51,18 +59,31 @@ interface RowFit {
   self: HTMLElement;
   nameEl: HTMLElement;
   pathEl: HTMLElement | null;
-  /** The folder text the row shows when there is room. */
-  full: string;
-  /** The row never shows the whole folder: it is turned off or always shortened. */
-  pathHidden: boolean;
-  /** A shorter spelling to fall back to, or null to never shorten. */
-  short: string | null;
-  /** Lines the full path may take before it counts as clipped. */
+  segments: FolderSegment[];
+  shortenable: number[];
+  /** How many segments to shorten: try each count from `minCut` up until the path fits. */
+  minCut: number;
+  maxCut: number;
+  /** The file has a folder, but the row does not show it. */
+  pathOff: boolean;
+  /** Lines the path may take before it counts as clipped. */
   maxLines: number;
   /** Full path for the tooltip, or null when the tooltip does not depend on fit. */
   tooltip: string | null;
   delay: number;
   placement: TooltipPosition;
+}
+
+/** Draw a path with its first `count` shortenable segments cut, marking the cut ones. */
+function drawPath(el: HTMLElement, segments: FolderSegment[], shortenable: number[], count: number): void {
+  el.empty();
+  const cut = new Set(shortenable.slice(0, count));
+  segments.forEach((segment, i) => {
+    if (i > 0) el.appendText("/");
+    if (cut.has(i)) el.createSpan({ cls: "recents-path-short", text: segment.short });
+    else el.appendText(segment.name);
+  });
+  if (segments.length === 1 && segments[0].name === "") el.setText("/");
 }
 
 /** Below the name a path may wrap this far before it is shortened. */
@@ -81,18 +102,20 @@ function overflows(el: HTMLElement, maxLines: number): boolean {
 }
 
 function fitRow(fit: RowFit): void {
-  const { pathEl, full, short, maxLines } = fit;
-  let pathShown = !fit.pathHidden;
+  const { pathEl, segments, shortenable, maxLines } = fit;
+  let pathShown = !fit.pathOff;
   if (pathEl) {
-    pathEl.setText(full);
-    const clipped = overflows(pathEl, maxLines);
-    if (clipped && short !== null) {
-      pathEl.setText(short);
-      pathShown = false;
-    } else if (clipped && maxLines <= 1) {
-      // Cut off with an ellipsis. Below the name a long path wraps instead, so it stays whole.
-      pathShown = false;
+    // Shorten one more folder at a time, from the left, until the path fits.
+    let count = fit.minCut;
+    drawPath(pathEl, segments, shortenable, count);
+    let clipped = overflows(pathEl, maxLines);
+    while (clipped && count < fit.maxCut) {
+      count++;
+      drawPath(pathEl, segments, shortenable, count);
+      clipped = overflows(pathEl, maxLines);
     }
+    // Shortened, or cut off with an ellipsis. Below the name a long path wraps, so it stays whole.
+    pathShown = count === 0 && !(clipped && maxLines <= 1);
   }
   if (fit.tooltip === null) return;
   const nameShown = fit.nameEl.scrollWidth <= fit.nameEl.clientWidth;
@@ -175,9 +198,31 @@ function renderSection(
   const pathStyle: PathStyle = {
     absolute: store.settings.absolutePath,
     base: app.vault.adapter instanceof FileSystemAdapter ? app.vault.adapter.getBasePath() : null,
-    shorten: store.settings.shortenFolders === "always",
   };
-  for (const file of files) renderRow(body, host, id, file, activePath, knownIcons, pathStyle, fits);
+  const siblingsOf = folderLister(app);
+  const context: RowContext = { activePath, knownIcons, pathStyle, siblingsOf, fits };
+  for (const file of files) renderRow(body, host, id, file, context);
+}
+
+interface RowContext {
+  activePath: string | null;
+  knownIcons: Set<string>;
+  pathStyle: PathStyle;
+  siblingsOf: (vaultFolder: string) => string[] | null;
+  fits: RowFit[];
+}
+
+/** Lists the folders inside a vault folder, remembering each answer for one draw. */
+function folderLister(app: App): (vaultFolder: string) => string[] | null {
+  const cache = new Map<string, string[] | null>();
+  return (vaultFolder) => {
+    const cached = cache.get(vaultFolder);
+    if (cached !== undefined) return cached;
+    const folder = vaultFolder === "" ? app.vault.getRoot() : app.vault.getFolderByPath(vaultFolder);
+    const names = folder ? folder.children.filter((c) => c instanceof TFolder).map((c) => c.name) : null;
+    cache.set(vaultFolder, names);
+    return names;
+  };
 }
 
 function renderRow(
@@ -185,12 +230,10 @@ function renderRow(
   host: SectionsHost,
   id: SectionId,
   file: TFile,
-  activePath: string | null,
-  knownIcons: Set<string>,
-  pathStyle: PathStyle,
-  fits: RowFit[],
+  context: RowContext,
 ): void {
   const { app, store } = host;
+  const { activePath, knownIcons, pathStyle, fits } = context;
   const row = body.createDiv({ cls: "recents-row tree-item nav-file" });
   const self = row.createDiv({ cls: "recents-row-self tree-item-self nav-file-title is-clickable" });
   self.setAttr("tabindex", "0");
@@ -208,22 +251,26 @@ function renderRow(
   const text = self.createDiv({ cls: "recents-row-text" });
   text.toggleClass("is-below", pathLocation === "below");
   const nameEl = text.createDiv({ cls: "tree-item-inner nav-file-title-content", text: file.basename });
-  const { shortenFolders } = store.settings;
-  // The folder in full, before any shortening, whether or not the row shows it.
-  const fullFolder = folderLabel(file.path, { ...pathStyle, shorten: false });
-  const folder = pathLocation === "off" ? "" : folderLabel(file.path, pathStyle);
-  const pathEl = folder ? text.createDiv({ cls: "recents-row-path", text: folder }) : null;
-  const shortFolder = folderLabel(file.path, { ...pathStyle, shorten: true });
-  const fitsShorten = pathEl !== null && shortenFolders === "clipped" && shortFolder !== fullFolder;
+  const { shortenFolders, keepFolders } = store.settings;
+  const hasFolder = folderLabel(file.path, pathStyle) !== "";
+  const segments = hasFolder ? folderSegments(file.path, pathStyle, context.siblingsOf) : [];
+  const shortenable = shortenableIndexes(segments, keepFolders);
+  const pathEl = hasFolder && pathLocation !== "off" ? text.createDiv({ cls: "recents-row-path" }) : null;
+  const all = shortenable.length;
+  const minCut = shortenFolders === "always" ? all : 0;
+  const maxCut = shortenFolders === "never" ? 0 : all;
   const fitsTooltip = tooltipMode === "hidden";
-  if (fitsShorten || fitsTooltip) {
+  if (pathEl) drawPath(pathEl, segments, shortenable, minCut);
+  if ((pathEl && maxCut > minCut) || fitsTooltip) {
     fits.push({
       self,
       nameEl,
       pathEl,
-      full: folder,
-      pathHidden: fullFolder !== "" && folder !== fullFolder,
-      short: fitsShorten ? shortFolder : null,
+      segments,
+      shortenable,
+      minCut,
+      maxCut,
+      pathOff: hasFolder && pathEl === null,
       maxLines: pathLocation === "below" ? BELOW_MAX_LINES : 1,
       tooltip: fitsTooltip ? tooltip : null,
       delay: tooltipDelay,

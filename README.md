@@ -43,7 +43,8 @@ Recents lists and pins files from outside your vault, the same as any other file
 | Section order | Pinned first | Chooses which section is on top. |
 | Hide pinned files from recent | Off | A pinned file shows only in the Pinned section. |
 | Folder path | Beside the name | Shows the folder each file is in, in a fainter color, to tell apart files that share a name such as README. Choose Off, Beside the name, or Below the name. Below the name, a long path wraps onto more lines. |
-| Shorten folder names | Never | Cuts each folder to its first letter, so `home/improvements/bathroom` shows as `h/i/b`. Choose Never, Always, or When clipped, which does it only for paths that do not fit: on one line beside the name, or on two lines below it. Hidden when Folder path is Off. |
+| Shorten folder names | Never | Cuts each folder to the fewest letters that still tell it apart from the folders beside it, so `home/improvements/bathroom` can show as `h/imp/bathroom`. Shortened folders look a little fainter. Choose Never, Always, or When clipped, which shortens from the left only as far as needed to fit: on one line beside the name, or on two lines below it. Hidden when Folder path is Off. |
+| Folders kept whole | 1 | How many of the innermost folders are never shortened. 1 keeps the folder the file is in. Shown when shortening is on. |
 | Show absolute path | Off | Starts the path at the root of your disk instead of your vault, for example `/Users/you/vault/home`. Desktop only. Hidden when Folder path is Off. |
 | Path tooltip | When hidden | Shows the full path when you hover over a file. Choose Never, Always, or When hidden, which shows it only if the row does not already show the whole path because the folder path is off, shortened or cut off. |
 | Tooltip position | Below | Which side of the file the full path appears on: Below, Above, Left or Right. Hidden when Path tooltip is Never. |

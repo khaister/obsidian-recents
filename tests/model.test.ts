@@ -9,11 +9,15 @@ import {
   movePin,
   parentPath,
   recordOpen,
-  shortenPath,
+  folderSegments,
+  joinSegments,
+  shortSegment,
+  shortenableIndexes,
   removePaths,
   renamePaths,
   sanitize,
   sanitizeRecents,
+  type PathStyle,
 } from "../src/model";
 import { DEFAULT_SETTINGS } from "../src/types";
 
@@ -155,35 +159,67 @@ describe("external files", () => {
 });
 
 describe("path display", () => {
-  const relative = { absolute: false, base: null, shorten: false };
+  const relative: PathStyle = { absolute: false, base: null };
+  // home holds improvements and inventory; improvements holds bathroom.
+  const tree: Record<string, string[]> = {
+    "": ["home", "hobbies", ".obsidian"],
+    home: ["improvements", "inventory"],
+    "home/improvements": ["bathroom"],
+  };
+  const siblingsOf = (folder: string): string[] | null => tree[folder] ?? null;
+  const cutAll = (path: string, keep: number, style = relative): string => {
+    const segments = folderSegments(path, style, siblingsOf);
+    const shortenable = shortenableIndexes(segments, keep);
+    return joinSegments(segments, shortenable, shortenable.length);
+  };
 
-  it("shortens every folder to its first letter", () => {
-    expect(shortenPath("home/improvements/bathroom")).toBe("h/i/b");
-    expect(shortenPath("/Users/khai")).toBe("/U/k");
-    expect(shortenPath("C:/Users/me")).toBe("C:/U/m");
-    expect(shortenPath("")).toBe("");
+  it("cuts a folder to the shortest start no sibling shares", () => {
+    expect(shortSegment("improvements", ["improvements", "inventory"])).toBe("im");
+    expect(shortSegment("home", ["home", "hobbies"])).toBe("hom");
+    expect(shortSegment("bathroom", ["bathroom"])).toBe("b");
+    expect(shortSegment("Notes", ["notes-old", "Notes"])).toBe("Notes");
   });
 
-  it("labels a folder relative to the vault, shortened or not", () => {
+  it("keeps leading dots and drive letters", () => {
+    expect(shortSegment(".obsidian", [".obsidian", "home"])).toBe(".o");
+    expect(shortSegment(".obsidian", null)).toBe(".o");
+    expect(shortSegment("C:", null)).toBe("C:");
+    expect(shortSegment("Users", null)).toBe("U");
+  });
+
+  it("keeps the innermost folders whole", () => {
+    expect(cutAll("home/improvements/bathroom/README.md", 1)).toBe("hom/im/bathroom");
+    expect(cutAll("home/improvements/bathroom/README.md", 0)).toBe("hom/im/b");
+    expect(cutAll("home/improvements/bathroom/README.md", 5)).toBe("home/improvements/bathroom");
+  });
+
+  it("shortens from the left, one folder at a time", () => {
+    const segments = folderSegments("home/improvements/bathroom/README.md", relative, siblingsOf);
+    const shortenable = shortenableIndexes(segments, 1);
+    expect(joinSegments(segments, shortenable, 0)).toBe("home/improvements/bathroom");
+    expect(joinSegments(segments, shortenable, 1)).toBe("hom/improvements/bathroom");
+    expect(joinSegments(segments, shortenable, 2)).toBe("hom/im/bathroom");
+  });
+
+  it("labels a folder relative to the vault", () => {
     expect(folderLabel("home/improvements/README.md", relative)).toBe("home/improvements");
-    expect(folderLabel("home/improvements/README.md", { ...relative, shorten: true })).toBe("h/i");
     expect(folderLabel("README.md", relative)).toBe("");
   });
 
   it("starts at the disk root when asked and the vault location is known", () => {
-    const style = { absolute: true, base: "/Users/me/vault", shorten: false };
+    const style = { absolute: true, base: "/Users/me/vault" };
     expect(folderLabel("home/README.md", style)).toBe("/Users/me/vault/home");
     expect(folderLabel("README.md", style)).toBe("/Users/me/vault");
-    expect(folderLabel("home/README.md", { ...style, shorten: true })).toBe("/U/m/v/h");
+    expect(cutAll("home/improvements/README.md", 1, style)).toBe("/U/m/v/hom/improvements");
     expect(folderLabel("home/README.md", { ...style, base: "C:\\Users\\me\\vault\\" })).toBe("C:/Users/me/vault/home");
   });
 
   it("falls back to the vault path when the vault location is unknown", () => {
-    expect(folderLabel("home/README.md", { absolute: true, base: null, shorten: false })).toBe("home");
+    expect(folderLabel("home/README.md", { absolute: true, base: null })).toBe("home");
   });
 
   it("never rewrites the path of an external file", () => {
-    const style = { absolute: true, base: "/Users/me/vault", shorten: false };
+    const style = { absolute: true, base: "/Users/me/vault" };
     expect(folderLabel("file:/Users/me/docs/a.md", style)).toBe("/Users/me/docs");
     expect(fullPathLabel("file:/Users/me/docs/a.md", style)).toBe("/Users/me/docs/a.md");
   });

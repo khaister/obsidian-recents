@@ -141,6 +141,11 @@
   box-shadow: 0 2px 0 0 var(--interactive-accent);
 }
 
+/* A folder cut to its short form. */
+.recents-path-short {
+  opacity: 0.7;
+}
+
 /* Used briefly to test whether the full path fits on one line. */
 .recents-row-text .recents-row-path.is-measuring {
   overflow: hidden;

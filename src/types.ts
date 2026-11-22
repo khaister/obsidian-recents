@@ -26,6 +26,8 @@ export interface RecentsSettings {
   pathLocation: PathLocation;
   /** Cut each folder name to its first letter, so h/i/b stands for home/improvements/bathroom. */
   shortenFolders: ShortenMode;
+  /** How many of the innermost folders are never shortened. */
+  keepFolders: number;
   /** Show the path from the root of the disk instead of from the vault root. Desktop only. */
   absolutePath: boolean;
   tooltipMode: TooltipMode;
@@ -51,6 +53,8 @@ export const MAX_ITEMS_LIMIT = 500;
 
 export const MAX_TOOLTIP_DELAY = 2000;
 
+export const MAX_KEEP_FOLDERS = 10;
+
 export const DEFAULT_SETTINGS: RecentsSettings = {
   maxItems: 50,
   showPinned: true,
@@ -59,6 +63,7 @@ export const DEFAULT_SETTINGS: RecentsSettings = {
   hidePinnedFromRecent: false,
   pathLocation: "beside",
   shortenFolders: "never",
+  keepFolders: 1,
   absolutePath: false,
   tooltipMode: "hidden",
   tooltipPosition: "bottom",
