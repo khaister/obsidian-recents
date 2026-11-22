@@ -6,6 +6,9 @@ import {
   type PersistedData,
   type RecentsSettings,
   type SectionOrder,
+  type ShortenMode,
+  type TooltipMode,
+  type TooltipPosition,
 } from "./types";
 
 /** Obsidian addresses a file outside the vault as "file:" plus its absolute path. */
@@ -145,6 +148,23 @@ function asPathLocation(value: unknown, legacyShow: unknown): PathLocation {
   return DEFAULT_SETTINGS.pathLocation;
 }
 
+function asShortenMode(value: unknown, legacyOn: unknown): ShortenMode {
+  if (value === "never" || value === "clipped" || value === "always") return value;
+  // An earlier version saved a single on/off switch.
+  if (legacyOn === true) return "always";
+  return DEFAULT_SETTINGS.shortenFolders;
+}
+
+function asTooltipMode(value: unknown): TooltipMode {
+  return value === "never" || value === "hidden" || value === "always" ? value : DEFAULT_SETTINGS.tooltipMode;
+}
+
+function asTooltipPosition(value: unknown): TooltipPosition {
+  return value === "top" || value === "bottom" || value === "left" || value === "right"
+    ? value
+    : DEFAULT_SETTINGS.tooltipPosition;
+}
+
 function asOrder(value: unknown): SectionOrder {
   return value === "recent-first" ? "recent-first" : "pinned-first";
 }
@@ -169,8 +189,10 @@ export function sanitize(raw: unknown): PersistedData {
     sectionOrder: asOrder(s.sectionOrder),
     hidePinnedFromRecent: asBool(s.hidePinnedFromRecent, DEFAULT_SETTINGS.hidePinnedFromRecent),
     pathLocation: asPathLocation(s.pathLocation, s.showPath),
-    shortenPath: asBool(s.shortenPath, DEFAULT_SETTINGS.shortenPath),
+    shortenFolders: asShortenMode(s.shortenFolders, s.shortenPath),
     absolutePath: asBool(s.absolutePath, DEFAULT_SETTINGS.absolutePath),
+    tooltipMode: asTooltipMode(s.tooltipMode),
+    tooltipPosition: asTooltipPosition(s.tooltipPosition),
     tooltipDelay: Math.min(MAX_TOOLTIP_DELAY, Math.max(0, Math.round(delayRaw))),
     focusExistingTab: asBool(s.focusExistingTab, DEFAULT_SETTINGS.focusExistingTab),
     keepOrderOnListClick: asBool(s.keepOrderOnListClick, DEFAULT_SETTINGS.keepOrderOnListClick),

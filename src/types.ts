@@ -2,6 +2,15 @@ export type SectionId = "pinned" | "recent";
 
 export type SectionOrder = "pinned-first" | "recent-first";
 
+/** Which side of a row its tooltip appears on. */
+export type TooltipPosition = "top" | "bottom" | "left" | "right";
+
+/** When a row shows its full path on hover. */
+export type TooltipMode = "never" | "hidden" | "always";
+
+/** When folder names are cut to their first letter. */
+export type ShortenMode = "never" | "clipped" | "always";
+
 /** Where a file's folder path goes in its row. */
 export type PathLocation = "off" | "beside" | "below";
 
@@ -16,9 +25,11 @@ export interface RecentsSettings {
   /** Where to show the folder a file is in. */
   pathLocation: PathLocation;
   /** Cut each folder name to its first letter, so h/i/b stands for home/improvements/bathroom. */
-  shortenPath: boolean;
+  shortenFolders: ShortenMode;
   /** Show the path from the root of the disk instead of from the vault root. Desktop only. */
   absolutePath: boolean;
+  tooltipMode: TooltipMode;
+  tooltipPosition: TooltipPosition;
   /** Milliseconds to wait before a row's path tooltip appears. */
   tooltipDelay: number;
   /** Switch to the tab that already shows the file instead of opening a copy. */
@@ -47,8 +58,10 @@ export const DEFAULT_SETTINGS: RecentsSettings = {
   sectionOrder: "pinned-first",
   hidePinnedFromRecent: false,
   pathLocation: "beside",
-  shortenPath: false,
+  shortenFolders: "never",
   absolutePath: false,
+  tooltipMode: "hidden",
+  tooltipPosition: "bottom",
   tooltipDelay: 100,
   focusExistingTab: true,
   keepOrderOnListClick: false,

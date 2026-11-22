@@ -43,9 +43,11 @@ Recents lists and pins files from outside your vault, the same as any other file
 | Section order | Pinned first | Chooses which section is on top. |
 | Hide pinned files from recent | Off | A pinned file shows only in the Pinned section. |
 | Folder path | Beside the name | Shows the folder each file is in, in a fainter color, to tell apart files that share a name such as README. Choose Off, Beside the name, or Below the name. Below the name, a long path wraps onto more lines. |
-| Shorten folder names | Off | Cuts each folder to its first letter, so `home/improvements/bathroom` shows as `h/i/b`. |
-| Show absolute path | Off | Starts the path at the root of your disk instead of your vault, for example `/Users/you/vault/home`. Desktop only. |
-| Tooltip delay | 100 | Milliseconds to wait before the full path shows when you hover over a file. Enter 0 to show it at once. |
+| Shorten folder names | Never | Cuts each folder to its first letter, so `home/improvements/bathroom` shows as `h/i/b`. Choose Never, Always, or When clipped, which does it only for paths that do not fit: on one line beside the name, or on two lines below it. Hidden when Folder path is Off. |
+| Show absolute path | Off | Starts the path at the root of your disk instead of your vault, for example `/Users/you/vault/home`. Desktop only. Hidden when Folder path is Off. |
+| Path tooltip | When hidden | Shows the full path when you hover over a file. Choose Never, Always, or When hidden, which shows it only if the row does not already show the whole path because the folder path is off, shortened or cut off. |
+| Tooltip position | Below | Which side of the file the full path appears on: Below, Above, Left or Right. Hidden when Path tooltip is Never. |
+| Tooltip delay | 100 | Milliseconds to wait before the full path shows when you hover over a file. Enter 0 to show it at once. Hidden when Path tooltip is Never. |
 | Maximum recent files | 50 | How many files Recent keeps. Older ones drop off the end. Enter a number from 1 to 500. |
 | Keep order when opening from the list | Off | A file you open from the pane stays where it is instead of jumping to the top. |
 | Switch to an open tab | On | Clicking a file that is already open takes you to that tab. |

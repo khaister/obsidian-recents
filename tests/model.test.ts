@@ -106,6 +106,18 @@ describe("sanitize", () => {
     expect(sanitize({ settings: { tooltipDelay: 0 } }).settings.tooltipDelay).toBe(0);
   });
 
+  it("defaults the tooltip to when hidden and rejects unknown modes", () => {
+    expect(sanitize({}).settings.tooltipMode).toBe("hidden");
+    expect(sanitize({ settings: { tooltipMode: "always" } }).settings.tooltipMode).toBe("always");
+    expect(sanitize({ settings: { tooltipMode: "sometimes" } }).settings.tooltipMode).toBe("hidden");
+  });
+
+  it("defaults the tooltip position to below and rejects unknown sides", () => {
+    expect(sanitize({}).settings.tooltipPosition).toBe("bottom");
+    expect(sanitize({ settings: { tooltipPosition: "left" } }).settings.tooltipPosition).toBe("left");
+    expect(sanitize({ settings: { tooltipPosition: "middle" } }).settings.tooltipPosition).toBe("bottom");
+  });
+
   it("sanitizes the recents list", () => {
     expect(sanitizeRecents(["a", "a", 1, "b", "c"], 2)).toEqual(["a", "b"]);
     expect(sanitizeRecents({}, 5)).toEqual([]);
@@ -179,6 +191,13 @@ describe("path display", () => {
   it("gives the full path for a tooltip", () => {
     expect(fullPathLabel("home/README.md", relative)).toBe("home/README.md");
     expect(fullPathLabel("home/README.md", { absolute: true, base: "/Users/me/vault" })).toBe("/Users/me/vault/home/README.md");
+  });
+
+  it("reads the old shorten switch", () => {
+    expect(sanitize({ settings: { shortenPath: true } }).settings.shortenFolders).toBe("always");
+    expect(sanitize({ settings: { shortenPath: false } }).settings.shortenFolders).toBe("never");
+    expect(sanitize({ settings: { shortenFolders: "clipped", shortenPath: true } }).settings.shortenFolders).toBe("clipped");
+    expect(sanitize({}).settings.shortenFolders).toBe("never");
   });
 
   it("reads the old show-path switch", () => {

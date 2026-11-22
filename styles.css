@@ -141,6 +141,14 @@
   box-shadow: 0 2px 0 0 var(--interactive-accent);
 }
 
+/* Used briefly to test whether the full path fits on one line. */
+.recents-row-text .recents-row-path.is-measuring {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow-wrap: normal;
+}
+
 /* A setting whose box goes under its description instead of beside it. */
 .recents-wide-setting {
   flex-direction: column;

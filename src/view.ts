@@ -7,6 +7,8 @@ export const VIEW_TYPE = "recents-view";
 export class RecentsView extends ItemView {
   private readonly hover: HoverParent = { hoverPopover: null };
   private readonly requestRedraw = debounce(() => this.redraw(), 30, true);
+  /** Stops the width watcher from the last draw. */
+  private stopWatching: () => void = () => undefined;
 
   public constructor(
     leaf: WorkspaceLeaf,
@@ -37,6 +39,11 @@ export class RecentsView extends ItemView {
     return Promise.resolve();
   }
 
+  public onClose(): Promise<void> {
+    this.stopWatching();
+    return Promise.resolve();
+  }
+
   public onPaneMenu(menu: Menu, source: string): void {
     super.onPaneMenu(menu, source);
     menu.addItem((item) =>
@@ -51,7 +58,8 @@ export class RecentsView extends ItemView {
   private redraw(): void {
     // Rebuilding the list resets the scroll position unless it is put back.
     const scrollTop = this.contentEl.scrollTop;
-    renderSections(this.contentEl, {
+    this.stopWatching();
+    this.stopWatching = renderSections(this.contentEl, {
       app: this.app,
       store: this.store,
       hoverSource: VIEW_TYPE,

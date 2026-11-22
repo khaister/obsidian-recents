@@ -1,7 +1,7 @@
 import { PluginSettingTab, type App, type Setting, type SettingDefinitionItem } from "obsidian";
 import { compilePatterns } from "./model";
 import type RecentsPlugin from "./main";
-import { MAX_ITEMS_LIMIT, MAX_TOOLTIP_DELAY, type PathLocation, type SectionOrder } from "./types";
+import { MAX_ITEMS_LIMIT, MAX_TOOLTIP_DELAY, type PathLocation, type SectionOrder, type ShortenMode, type TooltipMode, type TooltipPosition } from "./types";
 
 function lines(text: string): string[] {
   return text
@@ -39,6 +39,12 @@ export class RecentsSettingTab extends PluginSettingTab {
             desc: "A pinned file shows only in the pinned section.",
             control: { type: "toggle", key: "hidePinnedFromRecent" },
           },
+        ],
+      },
+      {
+        type: "group",
+        heading: "Rows",
+        items: [
           {
             name: "Folder path",
             desc: "Show the folder each file is in, to tell apart files that share a name. Below the name, a long path wraps onto more lines.",
@@ -50,17 +56,43 @@ export class RecentsSettingTab extends PluginSettingTab {
           },
           {
             name: "Shorten folder names",
-            desc: "Cut each folder to its first letter, so home/improvements/bathroom shows as h/i/b.",
-            control: { type: "toggle", key: "shortenPath" },
+            desc: "Cut each folder to its first letter, so home/improvements/bathroom shows as h/i/b. When clipped does this only for paths that do not fit: on one line beside the name, or on two lines below it.",
+            visible: () => this.plugin.store.settings.pathLocation !== "off",
+            control: {
+              type: "dropdown",
+              key: "shortenFolders",
+              options: { never: "Never", clipped: "When clipped", always: "Always" },
+            },
           },
           {
             name: "Show absolute path",
             desc: "Start the path at the root of your disk instead of the vault. Desktop only.",
+            visible: () => this.plugin.store.settings.pathLocation !== "off",
             control: { type: "toggle", key: "absolutePath" },
+          },
+          {
+            name: "Path tooltip",
+            desc: "Show the full path when you hover over a file. When hidden shows it only if the row does not already show the whole path, because the folder path is off, shortened or cut off.",
+            control: {
+              type: "dropdown",
+              key: "tooltipMode",
+              options: { never: "Never", hidden: "When hidden", always: "Always" },
+            },
+          },
+          {
+            name: "Tooltip position",
+            desc: "Which side of the file the full path appears on.",
+            visible: () => this.plugin.store.settings.tooltipMode !== "never",
+            control: {
+              type: "dropdown",
+              key: "tooltipPosition",
+              options: { bottom: "Below", top: "Above", left: "Left", right: "Right" },
+            },
           },
           {
             name: "Tooltip delay",
             desc: "Milliseconds to wait before the full path shows when you hover over a file. Enter 0 to show it at once.",
+            visible: () => this.plugin.store.settings.tooltipMode !== "never",
             control: {
               type: "number",
               key: "tooltipDelay",
@@ -161,12 +193,16 @@ export class RecentsSettingTab extends PluginSettingTab {
         return settings.hidePinnedFromRecent;
       case "pathLocation":
         return settings.pathLocation;
-      case "shortenPath":
-        return settings.shortenPath;
+      case "shortenFolders":
+        return settings.shortenFolders;
       case "absolutePath":
         return settings.absolutePath;
       case "maxItems":
         return settings.maxItems;
+      case "tooltipMode":
+        return settings.tooltipMode;
+      case "tooltipPosition":
+        return settings.tooltipPosition;
       case "tooltipDelay":
         return settings.tooltipDelay;
       case "keepOrderOnListClick":
@@ -188,8 +224,6 @@ export class RecentsSettingTab extends PluginSettingTab {
           return store.updateSettings({ showRecent: value });
         case "hidePinnedFromRecent":
           return store.updateSettings({ hidePinnedFromRecent: value });
-        case "shortenPath":
-          return store.updateSettings({ shortenPath: value });
         case "absolutePath":
           return store.updateSettings({ absolutePath: value });
         case "keepOrderOnListClick":
@@ -209,7 +243,17 @@ export class RecentsSettingTab extends PluginSettingTab {
       case "sectionOrder":
         return store.updateSettings({ sectionOrder: value as SectionOrder });
       case "pathLocation":
-        return store.updateSettings({ pathLocation: value as PathLocation });
+        store.updateSettings({ pathLocation: value as PathLocation });
+        // Shortening and absolute path only show while a path does.
+        return this.update();
+      case "shortenFolders":
+        return store.updateSettings({ shortenFolders: value as ShortenMode });
+      case "tooltipPosition":
+        return store.updateSettings({ tooltipPosition: value as TooltipPosition });
+      case "tooltipMode":
+        store.updateSettings({ tooltipMode: value as TooltipMode });
+        // The delay only matters while tooltips can show.
+        return this.update();
       default:
         return;
     }
