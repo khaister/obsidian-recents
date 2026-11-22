@@ -2,6 +2,27 @@
   padding: var(--size-4-2);
 }
 
+/*
+ * Headings, rows and help text share one left edge. Obsidian hangs a heading's
+ * collapse arrow to the left of its padding, so the padding leaves it room, and
+ * the list under a heading drops the usual tree indent and guide line.
+ */
+.recents-view {
+  --recents-inset: var(--size-4-6);
+}
+
+.recents-section-header.tree-item-self,
+.recents-row-self.tree-item-self,
+.recents-empty {
+  padding-inline-start: var(--recents-inset);
+}
+
+.recents-section-body.tree-item-children {
+  margin-inline-start: 0;
+  padding-inline-start: 0;
+  border-inline-start: none;
+}
+
 .recents-section + .recents-section {
   margin-top: var(--size-4-2);
 }
@@ -34,7 +55,8 @@
 }
 
 .recents-empty {
-  padding: var(--size-4-1) var(--size-4-2);
+  padding-block: var(--size-4-1);
+  padding-inline-end: var(--size-4-2);
   color: var(--text-faint);
   font-size: var(--font-ui-small);
 }
