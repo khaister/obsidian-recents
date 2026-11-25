@@ -34,6 +34,8 @@ export interface RecentsSettings {
   tooltipPosition: TooltipPosition;
   /** Milliseconds to wait before a row's path tooltip appears. */
   tooltipDelay: number;
+  /** Mark the file open in the editor with the theme's active-row color. */
+  highlightActive: boolean;
   /** Switch to the tab that already shows the file instead of opening a copy. */
   focusExistingTab: boolean;
   /** Opening a file from the list does not move it to the top. */
@@ -68,6 +70,7 @@ export const DEFAULT_SETTINGS: RecentsSettings = {
   tooltipMode: "hidden",
   tooltipPosition: "bottom",
   tooltipDelay: 100,
+  highlightActive: true,
   focusExistingTab: true,
   keepOrderOnListClick: false,
   omittedPaths: [],

@@ -124,6 +124,11 @@ export class RecentsSettingTab extends PluginSettingTab {
                   : "Enter a whole number from 0 to " + MAX_TOOLTIP_DELAY,
             },
           },
+          {
+            name: "Highlight the open file",
+            desc: "Marks the file you are viewing, the way the file explorer does.",
+            control: { type: "toggle", key: "highlightActive" },
+          },
         ],
       },
       {
@@ -228,6 +233,8 @@ export class RecentsSettingTab extends PluginSettingTab {
         return settings.tooltipDelay;
       case "keepOrderOnListClick":
         return settings.keepOrderOnListClick;
+      case "highlightActive":
+        return settings.highlightActive;
       case "focusExistingTab":
         return settings.focusExistingTab;
       default:
@@ -249,6 +256,8 @@ export class RecentsSettingTab extends PluginSettingTab {
           return store.updateSettings({ absolutePath: value });
         case "keepOrderOnListClick":
           return store.updateSettings({ keepOrderOnListClick: value });
+        case "highlightActive":
+          return store.updateSettings({ highlightActive: value });
         case "focusExistingTab":
           return store.updateSettings({ focusExistingTab: value });
         default:

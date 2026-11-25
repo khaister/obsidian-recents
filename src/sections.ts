@@ -193,7 +193,7 @@ function renderSection(
     body.createDiv({ cls: "recents-empty", text });
     return;
   }
-  const activePath = app.workspace.getActiveFile()?.path ?? null;
+  const activePath = store.settings.highlightActive ? (app.workspace.getActiveFile()?.path ?? null) : null;
   const knownIcons = knownIconIds();
   const pathStyle: PathStyle = {
     absolute: store.settings.absolutePath,

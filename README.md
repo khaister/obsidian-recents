@@ -49,6 +49,7 @@ Recents lists and pins files from outside your vault like any other file, and ho
 | Path tooltip | When hidden | Shows the full path when you hover over a file. Choose Never, Always, or When hidden, which shows it only if the row does not already show the whole path because the folder path is off, shortened or cut off. |
 | Tooltip position | Below | Which side of the file the full path appears on: Below, Above, Left or Right. Hidden when Path tooltip is Never. |
 | Tooltip delay | 100 | Milliseconds to wait before the full path shows when you hover over a file. Enter 0 to show it at once. Hidden when Path tooltip is Never. |
+| Highlight the open file | On | Marks the file you are viewing, the way the file explorer does. Turn it off to keep every row plain. |
 | Maximum recent files | 50 | How many files Recent keeps. Older ones drop off the end. Enter a number from 1 to 500. |
 | Keep order when opening from the list | Off | A file you open from the pane stays where it is instead of jumping to the top. |
 | Switch to an open tab | On | Clicking a file that is already open takes you to that tab. |

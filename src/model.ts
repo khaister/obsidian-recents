@@ -265,6 +265,7 @@ export function sanitize(raw: unknown): PersistedData {
     tooltipMode: asTooltipMode(s.tooltipMode),
     tooltipPosition: asTooltipPosition(s.tooltipPosition),
     tooltipDelay: Math.min(MAX_TOOLTIP_DELAY, Math.max(0, Math.round(delayRaw))),
+    highlightActive: asBool(s.highlightActive, DEFAULT_SETTINGS.highlightActive),
     focusExistingTab: asBool(s.focusExistingTab, DEFAULT_SETTINGS.focusExistingTab),
     keepOrderOnListClick: asBool(s.keepOrderOnListClick, DEFAULT_SETTINGS.keepOrderOnListClick),
     omittedPaths: asStringArray(s.omittedPaths),
