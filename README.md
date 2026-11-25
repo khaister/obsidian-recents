@@ -61,9 +61,9 @@ Your pins and settings sync with your vault. The Recent list does not: your phon
 
 ## Compared with Recent Files and Pin to Top
 
-Recents puts a recent list and pins in one pane, which otherwise takes two plugins. This table compares it with [Recent Files](https://github.com/tgrosinger/recent-files-obsidian) 1.7.10 and [Pin to Top](https://github.com/valenzine/obsidian-pin-to-top) 1.0.2, based on their source code and READMEs as of November 2026.
+Recents puts a recent list and pins in one pane, which otherwise takes two plugins. See feature comparison below.
 
-| | Recents | Recent Files | Pin to Top |
+| | Recents | [Recent Files](https://github.com/tgrosinger/recent-files-obsidian) 1.7.10 | [Pin to Top](https://github.com/valenzine/obsidian-pin-to-top) 1.0.2 |
 | --- | --- | --- | --- |
 | Where it shows | Its own sidebar pane | Its own sidebar pane | Top of the file explorer |
 | List of recently opened files | Yes | Yes | No |
