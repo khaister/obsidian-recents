@@ -20,8 +20,8 @@ export interface RecentsSettings {
   showPinned: boolean;
   showRecent: boolean;
   sectionOrder: SectionOrder;
-  /** Leave a pinned file out of the recent section. */
-  hidePinnedFromRecent: boolean;
+  /** List a pinned file in the recent section too. */
+  showPinnedInRecent: boolean;
   /** Where to show the folder a file is in. */
   pathLocation: PathLocation;
   /** Cut each folder name to its first letter, so h/i/b stands for home/improvements/bathroom. */
@@ -62,7 +62,7 @@ export const DEFAULT_SETTINGS: RecentsSettings = {
   showPinned: true,
   showRecent: true,
   sectionOrder: "pinned-first",
-  hidePinnedFromRecent: false,
+  showPinnedInRecent: true,
   pathLocation: "beside",
   shortenFolders: "never",
   keepFolders: 1,

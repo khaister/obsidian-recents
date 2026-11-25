@@ -103,6 +103,15 @@ describe("sanitize", () => {
     expect(out.pins).toEqual(["a", "b"]);
   });
 
+  it("shows pinned files in recent by default and reads the old hide setting", () => {
+    expect(sanitize({}).settings.showPinnedInRecent).toBe(true);
+    expect(sanitize({ settings: { hidePinnedFromRecent: true } }).settings.showPinnedInRecent).toBe(false);
+    expect(sanitize({ settings: { hidePinnedFromRecent: false } }).settings.showPinnedInRecent).toBe(true);
+    expect(
+      sanitize({ settings: { showPinnedInRecent: true, hidePinnedFromRecent: true } }).settings.showPinnedInRecent,
+    ).toBe(true);
+  });
+
   it("keeps the tooltip delay between 0 and 2000", () => {
     expect(sanitize({ settings: { tooltipDelay: -5 } }).settings.tooltipDelay).toBe(0);
     expect(sanitize({ settings: { tooltipDelay: 99999 } }).settings.tooltipDelay).toBe(2000);

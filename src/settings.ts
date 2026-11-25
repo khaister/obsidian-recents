@@ -35,9 +35,9 @@ export class RecentsSettingTab extends PluginSettingTab {
             },
           },
           {
-            name: "Hide pinned files from recent",
-            desc: "A pinned file shows only in the pinned section.",
-            control: { type: "toggle", key: "hidePinnedFromRecent" },
+            name: "Show pinned files in recent",
+            desc: "A pinned file also shows in the recent section. Turn it off to show it only in the pinned section.",
+            control: { type: "toggle", key: "showPinnedInRecent" },
           },
         ],
       },
@@ -213,8 +213,8 @@ export class RecentsSettingTab extends PluginSettingTab {
         return settings.showRecent;
       case "sectionOrder":
         return settings.sectionOrder;
-      case "hidePinnedFromRecent":
-        return settings.hidePinnedFromRecent;
+      case "showPinnedInRecent":
+        return settings.showPinnedInRecent;
       case "pathLocation":
         return settings.pathLocation;
       case "shortenFolders":
@@ -250,8 +250,8 @@ export class RecentsSettingTab extends PluginSettingTab {
           return store.updateSettings({ showPinned: value });
         case "showRecent":
           return store.updateSettings({ showRecent: value });
-        case "hidePinnedFromRecent":
-          return store.updateSettings({ hidePinnedFromRecent: value });
+        case "showPinnedInRecent":
+          return store.updateSettings({ showPinnedInRecent: value });
         case "absolutePath":
           return store.updateSettings({ absolutePath: value });
         case "keepOrderOnListClick":

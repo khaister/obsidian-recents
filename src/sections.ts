@@ -34,7 +34,7 @@ export function renderSections(container: HTMLElement, host: SectionsHost): () =
   const { settings, pins, recents } = host.store;
 
   const pinned = pins;
-  const recent = settings.hidePinnedFromRecent ? recents.filter((p) => !pins.includes(p)) : recents;
+  const recent = settings.showPinnedInRecent ? recents : recents.filter((p) => !pins.includes(p));
 
   const sections: { id: SectionId; title: string; paths: string[]; visible: boolean }[] = [
     { id: "pinned", title: "Pinned", paths: pinned, visible: settings.showPinned },

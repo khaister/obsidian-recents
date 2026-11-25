@@ -41,7 +41,7 @@ Recents lists and pins files from outside your vault like any other file, and ho
 | Show pinned section | On | Shows or hides the Pinned section. |
 | Show recent section | On | Shows or hides the Recent section. |
 | Section order | Pinned first | Chooses which section is on top. |
-| Hide pinned files from recent | Off | A pinned file shows only in the Pinned section. |
+| Show pinned files in recent | On | A pinned file also shows in the Recent section. Turn it off to show it only in the Pinned section. |
 | Folder path | Beside the name | Shows the folder each file is in, in a fainter color, to tell apart files that share a name such as README. Choose Off, Beside the name, or Below the name. Below the name, a long path wraps onto more lines. |
 | Shorten folder names | Never | Cuts each folder to the fewest letters that still tell it apart from the folders beside it, so `home/improvements/bathroom` can show as `h/im/bathroom`. Shortened folders look a little fainter. Choose Never, Always, or When clipped, which shortens only as much as needed, starting from the left: to fit one line beside the name, or two lines below it. Hidden when Folder path is Off. |
 | Folders kept whole | 1 | How many of the innermost folders are never shortened. 1 keeps the folder the file is in. Shown when shortening is on. |

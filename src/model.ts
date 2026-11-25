@@ -257,7 +257,10 @@ export function sanitize(raw: unknown): PersistedData {
     showPinned: asBool(s.showPinned, DEFAULT_SETTINGS.showPinned),
     showRecent: asBool(s.showRecent, DEFAULT_SETTINGS.showRecent),
     sectionOrder: asOrder(s.sectionOrder),
-    hidePinnedFromRecent: asBool(s.hidePinnedFromRecent, DEFAULT_SETTINGS.hidePinnedFromRecent),
+    showPinnedInRecent: asBool(
+      s.showPinnedInRecent,
+      typeof s.hidePinnedFromRecent === "boolean" ? !s.hidePinnedFromRecent : DEFAULT_SETTINGS.showPinnedInRecent,
+    ),
     pathLocation: asPathLocation(s.pathLocation, s.showPath),
     shortenFolders: asShortenMode(s.shortenFolders, s.shortenPath),
     keepFolders: Math.min(MAX_KEEP_FOLDERS, Math.max(0, Math.round(keepRaw))),
